@@ -2,8 +2,9 @@ Instructions
 1. Download Unity 2021.3 and clone this repository
 3. Implement a simple fighting game that achieves the gameplay described below
 4. Detailed instructions and a quick overview of provided repository can be found in the video [here](https://drive.google.com/file/d/1P1-U5Nxe4aGmFnl10HNCQeGL-iMivAWg/view?usp=sharing)
-5. Submit a PR titled [Your Name] Simple Fight.
-6. Sit tight! We will get back to you shortly.
+5. Sign the technical test waiver located in Assets/Signed Waiver/ folder and save as [Your Name] - Signed Waiver
+6. Submit a PR titled [Your Name] Simple Fight
+7. Sit tight! We will get back to you shortly
 
 Gameplay Overview:
 - Player uses WASD / arrow to control avatar movement
