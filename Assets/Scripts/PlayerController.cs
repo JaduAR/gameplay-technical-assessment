@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
     {
         Idle,
         Attacking,
+        ReturningToIdle,
         IdleBeforeHeavyPunch,
         ChargeHeavyPunch,
         HeavyPunch
@@ -65,6 +66,13 @@ public class PlayerController : MonoBehaviour
     {
         switch (_state)
         {
+            case PlayerState.ReturningToIdle:
+                if (_playerAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
+                {
+                    _playerAnim.Play("Base Movement");
+                    _state = PlayerState.Idle;
+                }
+                break;
             case PlayerState.Idle:
                 if (_queueAttack)
                 {
@@ -94,6 +102,7 @@ public class PlayerController : MonoBehaviour
             case PlayerState.Attacking:
                 if (_playerAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
                 {
+                    Debug.Log("Attacks in combo: " + _attacksInCombo);
                     if (_queueAttack)
                     {
                         _queueAttack = false;
@@ -102,6 +111,7 @@ public class PlayerController : MonoBehaviour
                         {
                             if (_nextAttackIsP1) _playerAnim.Play("P2 to Idle");
                             else _playerAnim.Play("P1 to Idle");
+                            Debug.Log("Going to Heavy Punch!");
                             _state = PlayerState.IdleBeforeHeavyPunch;
                             _attacksInCombo = 0;
                         }
@@ -118,12 +128,14 @@ public class PlayerController : MonoBehaviour
                         if (_nextAttackIsP1) _playerAnim.Play("P2 to Idle");
                         else _playerAnim.Play("P1 to Idle");
                         _attacksInCombo = 0;
+                        _state = PlayerState.ReturningToIdle;
                     }
                 }
                 break;
             case PlayerState.IdleBeforeHeavyPunch:
                 if (_playerAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
                 {
+                    Debug.Log("Idle to Charge!");
                     _playerAnim.Play("Idle to Charge");
                     _state = PlayerState.ChargeHeavyPunch;
                 }
@@ -131,23 +143,20 @@ public class PlayerController : MonoBehaviour
             case PlayerState.ChargeHeavyPunch:
                 if (_playerAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
                 {
+                    Debug.Log("Charge to heavy Punch!!");
                     _playerAnim.Play("Charge to Heavy Punch");
-                    _state = PlayerState.HeavyPunch;
+                    _state = PlayerState.ReturningToIdle;
                 }
                 break;
             case PlayerState.HeavyPunch:
                 if (_playerAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
                 {
                     //TODO: Set back to normal?
-                }    
+                }
+    
                 break;
 
         }
-
-
-
         transform.LookAt(new Vector3(_enemy.transform.position.x, transform.position.y, _enemy.transform.position.z));
-
-        if (_queueAttack) { _playerAnim.Play("Idle to P1"); }
     }
 }
