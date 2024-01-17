@@ -10,13 +10,9 @@ public class PlayerController : MonoBehaviour
 
     private PlayerControls _controls;
     private PlayerControls.CombatActions _combatControls;
-    
-    private Vector2 _horizontalInput;
 
     private bool _queueAttack = false;
     private bool _nextAttackIsP1 = true;
-    private float _attacksInCombo = 0;
-
 
     private const float _MIN_DISTANCE = .5f;
 
@@ -28,16 +24,13 @@ public class PlayerController : MonoBehaviour
         Attacking,
         ReturningToIdle,
         IdleBeforeHeavyPunch,
-        ChargeHeavyPunch,
-        HeavyPunch
+        ChargeHeavyPunch
     }
 
     void Awake()
     {
         _controls = new PlayerControls();
         _combatControls = _controls.Combat;
-
-        _combatControls.Movement.performed += HandleMovementInput;
     }
 
     private void OnEnable()
@@ -48,13 +41,6 @@ public class PlayerController : MonoBehaviour
     private void OnDisable()
     {
         _controls.Disable();
-    }
-
-    private void HandleMovementInput(InputAction.CallbackContext ctx)
-    {
-        Debug.Log(_combatControls.Movement.ReadValue<Vector2>());
-
-        _playerAnim.SetFloat("StrafeX", 1);
     }
 
     public void QueueAttack()
@@ -69,6 +55,8 @@ public class PlayerController : MonoBehaviour
             case PlayerState.ReturningToIdle:
                 if (_playerAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
                 {
+                    GameManager.Instance.ResetCombo();
+                    GameManager.Instance.DisableHitboxes();
                     _playerAnim.Play("Base Movement");
                     _state = PlayerState.Idle;
                 }
@@ -77,9 +65,16 @@ public class PlayerController : MonoBehaviour
                 if (_queueAttack)
                 {
                     _state = PlayerState.Attacking;
-                    if (_nextAttackIsP1) _playerAnim.Play("Idle to P1");
-                    else _playerAnim.Play("Idle to P2");
-                    _attacksInCombo = 1;
+                    if (_nextAttackIsP1)
+                    {
+                        GameManager.Instance.PunchLeft();
+                        _playerAnim.Play("Idle to P1");
+                    }
+                    else
+                    {
+                        GameManager.Instance.PunchRight();
+                        _playerAnim.Play("Idle to P2");
+                    }
                     _nextAttackIsP1 = !_nextAttackIsP1;
                     _queueAttack = false;
                 }
@@ -102,24 +97,30 @@ public class PlayerController : MonoBehaviour
             case PlayerState.Attacking:
                 if (_playerAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
                 {
-                    Debug.Log("Attacks in combo: " + _attacksInCombo);
                     if (_queueAttack)
                     {
                         _queueAttack = false;
-                        _attacksInCombo++;
-                        if (_attacksInCombo > 2)
+                        if (GameManager.Instance.GetCombo() >= 2)
                         {
                             if (_nextAttackIsP1) _playerAnim.Play("P2 to Idle");
                             else _playerAnim.Play("P1 to Idle");
                             Debug.Log("Going to Heavy Punch!");
                             _state = PlayerState.IdleBeforeHeavyPunch;
-                            _attacksInCombo = 0;
+                            GameManager.Instance.ResetCombo();
+                            GameManager.Instance.DisableHitboxes();
                         }
                         else
                         {
-                            if (_nextAttackIsP1) _playerAnim.Play("P2 to P1");
-                            else _playerAnim.Play("P1 to P2");
-                            _attacksInCombo++;
+                            if (_nextAttackIsP1)
+                            {
+                                GameManager.Instance.PunchLeft();
+                                _playerAnim.Play("P2 to P1");
+                            }
+                            else
+                            {
+                                GameManager.Instance.PunchRight();
+                                _playerAnim.Play("P1 to P2");
+                            }
                             _nextAttackIsP1 = !_nextAttackIsP1;
                         }
                     }
@@ -127,7 +128,6 @@ public class PlayerController : MonoBehaviour
                     {
                         if (_nextAttackIsP1) _playerAnim.Play("P2 to Idle");
                         else _playerAnim.Play("P1 to Idle");
-                        _attacksInCombo = 0;
                         _state = PlayerState.ReturningToIdle;
                     }
                 }
@@ -146,16 +146,9 @@ public class PlayerController : MonoBehaviour
                     Debug.Log("Charge to heavy Punch!!");
                     _playerAnim.Play("Charge to Heavy Punch");
                     _state = PlayerState.ReturningToIdle;
+                    GameManager.Instance.ChargePunch();
                 }
                 break;
-            case PlayerState.HeavyPunch:
-                if (_playerAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
-                {
-                    //TODO: Set back to normal?
-                }
-    
-                break;
-
         }
         transform.LookAt(new Vector3(_enemy.transform.position.x, transform.position.y, _enemy.transform.position.z));
     }
