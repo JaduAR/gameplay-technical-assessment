@@ -1,0 +1,6 @@
+Audio:
+Combat sounds: Free Deadly Kombat from Unity Asset Store
+Camera Click Sound: Single Camera Click.wav from FreeSound.org
+Boxing Ring song: https://opengameart.org/content/boxing-ring-0
+
+KO Image: https://image.pngaaa.com/277/1021277-middle.png
