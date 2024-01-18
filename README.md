@@ -1,5 +1,6 @@
 Instructions
 1. Download Unity 2021.3 and clone this repository
+2. Install git lfs and pull lfs files (without doing a git lfs pull, you will be missing assets)
 3. Implement a simple fighting game that achieves the gameplay described below
 4. Detailed instructions and a quick overview of provided repository can be found in the video [here](https://drive.google.com/file/d/1P1-U5Nxe4aGmFnl10HNCQeGL-iMivAWg/view?usp=sharing)
 5. Sign the technical test waiver located in Assets/Signed Waiver/ folder and save as [Your Name] - Signed Waiver
