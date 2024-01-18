@@ -117,3 +117,4 @@ Assets/StreamingAssets/build_info*
 # HotReload is used selectively by developers and installed into Packages/ folder. Ignore.
 # Should also not get checked in from Packages/manifest.json (will fail on farm if someone does it by accident).
 Packages/com.singularitygroup.hotreload/
+.vsconfig
