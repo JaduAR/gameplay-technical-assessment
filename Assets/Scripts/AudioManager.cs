@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+//Class with static instance used to control sound effects easily from any script
 public class AudioManager : MonoBehaviour
 {
     [HideInInspector] public static AudioManager Instance = null;

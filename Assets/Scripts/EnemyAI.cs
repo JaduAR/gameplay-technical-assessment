@@ -2,7 +2,7 @@ using UnityEngine;
 
 //Simple AI that will move backwards while taking damage, and will turn to face player.
 //Added a cooldown for avoidance to make it possible to charge punch them.
-//Also moves back if you're literally right on him.
+//Also moves back if you're literally right on him to prevent awkward animations where you clip into each other.
 
 public class EnemyAI : MonoBehaviour
 {
@@ -24,6 +24,7 @@ public class EnemyAI : MonoBehaviour
         AvoidCooldown
     }
 
+    //Upon taking damage, enemy goes into avoiding state if they're off cooldown.
     public void SetAvoid()
     {
         if (_state != EnemyState.AvoidCooldown)
@@ -42,6 +43,7 @@ public class EnemyAI : MonoBehaviour
             case EnemyState.Idle:
                 MoveIfTooClose();
                 break;
+            //While in Avoiding state, enemy moves backwards until timer runs out. Then cooldown starts before they will avoid again.
             case EnemyState.Avoiding:
                 _avoidTimer += Time.deltaTime;
                 if (_avoidTimer >= _AVOID_LENGTH)
@@ -52,6 +54,7 @@ public class EnemyAI : MonoBehaviour
                 }
                 else _anim.SetFloat("StrafeZ", -1);
                 break;
+            //Same as idle but tracks cooldown.
             case EnemyState.AvoidCooldown:
                 _avoidTimer += Time.deltaTime;
                 MoveIfTooClose();
@@ -64,6 +67,7 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    //Moves away if you manage to get right on top of him to prevent clipping into one another.
     private void MoveIfTooClose()
     {
         if (Vector3.Distance(transform.position, _player.transform.position) <= _MIN_DISTANCE) {

@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Collider script to represent the hitbox around player's fists. Only is enabled while punching.
 public class PunchHitbox : MonoBehaviour
 {
     [SerializeField] private Collider _hitboxCollider;
 
     private float _damageToDealOnHit = 10;
 
+    //When the hitbox is enabled, also pass how much damage this attack should do.
     public void EnableHitbox(float damage)
     {
         _hitboxCollider.enabled = true;

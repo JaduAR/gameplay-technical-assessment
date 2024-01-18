@@ -3,8 +3,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+//Manager class with static instance that can be called to conveniently control a variety of imperative game functions. 
 public class GameManager : MonoBehaviour
 {
+    [HideInInspector] public static GameManager Instance = null;
+
     [SerializeField] private GameObject _mainCam;
     [SerializeField] private GameObject[] _camList;
     [SerializeField] private CanvasGroup _KOScreen;
@@ -12,8 +15,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PunchHitbox _rightHandHitBox;
     [SerializeField] private EnemyAI _enemy;
     [SerializeField] private RectMask2D _healthBarMask;
-
-    [HideInInspector] public static GameManager Instance = null;
 
     private float _enemyHealth = 100;
     private int _comboCount = 0;
@@ -30,6 +31,9 @@ public class GameManager : MonoBehaviour
         _healthBarMaskWidth = _healthBarMask.rectTransform.rect.width;
     }
 
+
+#region Combat
+    //Called to deal damage to enemy
     public void TakeDamage(float damageAmount)
     {
         _enemy.SetAvoid();
@@ -78,7 +82,9 @@ public class GameManager : MonoBehaviour
     {
         _comboCount = 0;
     }
+    #endregion
 
+    #region Coroutines
     private IEnumerator LoseHealthAnimation(float startingHealth, float targHealth)
     {
         //Because the RectMask2D has to go from 0 to the width, we need the values to go from 0 to 100 instead of the opposite.
@@ -112,7 +118,7 @@ public class GameManager : MonoBehaviour
         if (delay) yield return new WaitForSeconds(.3f);
         Time.timeScale = 0;
         _mainCam.SetActive(false);
-        foreach(GameObject cam in _camList)
+        foreach (GameObject cam in _camList)
         {
             AudioManager.Instance.PlayCameraSwapAudio();
             cam.SetActive(true);
@@ -132,6 +138,6 @@ public class GameManager : MonoBehaviour
             _KOScreen.alpha = Mathf.Lerp(0, 1, timer / _KO_FADE_TIME);
             yield return null;
         }
-
     }
+    #endregion
 }

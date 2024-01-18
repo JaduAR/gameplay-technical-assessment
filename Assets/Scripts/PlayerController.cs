@@ -14,10 +14,10 @@ public class PlayerController : MonoBehaviour
     private bool _queueAttack = false;
     private bool _nextAttackIsP1 = true;
 
-    private const float _MIN_DISTANCE = .5f;
-
     private PlayerState _state = PlayerState.Idle;
 
+    private const float _MIN_DISTANCE = .5f;
+    
     public enum PlayerState
     {
         Idle,
@@ -52,6 +52,7 @@ public class PlayerController : MonoBehaviour
     {
         switch (_state)
         {
+            //The state the player goes into if they stop attacking or complete a charge punch.
             case PlayerState.ReturningToIdle:
                 if (_playerAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
                 {
@@ -82,7 +83,7 @@ public class PlayerController : MonoBehaviour
                 {
                     Vector2 movementInput = _combatControls.Movement.ReadValue<Vector2>();
 
-                    //If you're too close to opponent, prevent further movement
+                    //If you're too close to opponent, prevent further movement in any direction other than away.
                     if (Vector3.Distance(transform.position, _enemy.transform.position) <= _MIN_DISTANCE)
                     {
                         if (movementInput.y >= 0) movementInput.y = 0;
@@ -100,15 +101,16 @@ public class PlayerController : MonoBehaviour
                     if (_queueAttack)
                     {
                         _queueAttack = false;
+                        //If player is attacking and has hit twice already, then prepare for heavy punch
                         if (GameManager.Instance.GetCombo() >= 2)
                         {
                             if (_nextAttackIsP1) _playerAnim.Play("P2 to Idle");
                             else _playerAnim.Play("P1 to Idle");
-                            Debug.Log("Going to Heavy Punch!");
                             _state = PlayerState.IdleBeforeHeavyPunch;
                             GameManager.Instance.ResetCombo();
                             GameManager.Instance.DisableHitboxes();
                         }
+                        //If player hasn't hit twice, then just swap to P1/P2
                         else
                         {
                             if (_nextAttackIsP1)
@@ -124,6 +126,7 @@ public class PlayerController : MonoBehaviour
                             _nextAttackIsP1 = !_nextAttackIsP1;
                         }
                     }
+                    //If no attack queued, return to idle
                     else
                     {
                         if (_nextAttackIsP1) _playerAnim.Play("P2 to Idle");
@@ -135,7 +138,6 @@ public class PlayerController : MonoBehaviour
             case PlayerState.IdleBeforeHeavyPunch:
                 if (_playerAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
                 {
-                    Debug.Log("Idle to Charge!");
                     _playerAnim.Play("Idle to Charge");
                     _state = PlayerState.ChargeHeavyPunch;
                 }
@@ -143,13 +145,24 @@ public class PlayerController : MonoBehaviour
             case PlayerState.ChargeHeavyPunch:
                 if (_playerAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
                 {
-                    Debug.Log("Charge to heavy Punch!!");
                     _playerAnim.Play("Charge to Heavy Punch");
                     _state = PlayerState.ReturningToIdle;
                     GameManager.Instance.ChargePunch();
                 }
                 break;
         }
+        
         transform.LookAt(new Vector3(_enemy.transform.position.x, transform.position.y, _enemy.transform.position.z));
+
+
+        //There's a bug where if you Strafe to the right / hold D then the player moves towards the enemy instead of circling them like when you strafe left.
+        //I think this is due to the way the StrafeX animation is setup coupled with the player turning to look at the enemy all the time. I found a couple
+        //'hacky' solutions to it, like the one below of just rotating but they all came with issues. I think it would need to be changed on the animation for
+        //the best solution.
+
+        /*if (_playerAnim.GetFloat("StrafeX") > 0)
+        {
+            transform.Rotate(new Vector3(0, 40));
+        }*/
     }
 }
