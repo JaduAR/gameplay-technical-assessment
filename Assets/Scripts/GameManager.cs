@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,19 +11,23 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PunchHitbox _leftHandHitBox;
     [SerializeField] private PunchHitbox _rightHandHitBox;
     [SerializeField] private EnemyAI _enemy;
+    [SerializeField] private RectMask2D _healthBarMask;
 
     [HideInInspector] public static GameManager Instance = null;
 
     private float _enemyHealth = 100;
     private int _comboCount = 0;
 
-    private const float _HEALTH_REDUCTION_TIME = .2f;
+    private float _healthBarMaskWidth;
+
+    private const float _HEALTH_REDUCTION_TIME = .1f;
     private const float _END_GAME_CAM_TIME = .5f;
     private const float _KO_FADE_TIME = 1;
 
     private void Awake()
     {
         Instance = this;
+        _healthBarMaskWidth = _healthBarMask.rectTransform.rect.width;
     }
 
     public void TakeDamage(float damageAmount)
@@ -74,22 +79,31 @@ public class GameManager : MonoBehaviour
         _comboCount = 0;
     }
 
-    public void ReloadScene()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
     private IEnumerator LoseHealthAnimation(float startingHealth, float targHealth)
     {
+        //Because the RectMask2D has to go from 0 to the width, we need the values to go from 0 to 100 instead of the opposite.
+        //Multiply by .01f to turn them into a percent. 
+        startingHealth = Mathf.Abs(startingHealth - 100) * .01f;
+        targHealth = Mathf.Abs(targHealth - 100) * .01f;
+
         if (targHealth < 0) targHealth = 0;
+
         float timer = 0;
         while (timer <= _HEALTH_REDUCTION_TIME)
         {
             timer += Time.unscaledDeltaTime;
-            //TODO: Set health bar to correct spot via Mathf.Lerp(startingHealth, targHealth, timer/_HEALTH_REDUCTION_TIME);
+
+            //
+            _healthBarMask.padding = new Vector4(_healthBarMask.padding.x, _healthBarMask.padding.y, 
+                Mathf.Lerp(startingHealth * _healthBarMaskWidth, targHealth * _healthBarMaskWidth, timer/_HEALTH_REDUCTION_TIME),
+                _healthBarMask.padding.w);
+
             yield return null;
         }
-        //TODO: Set health bar to correct spot via targHealth
+
+        //Set it to targHealth in case it overshot depending on frame length
+        _healthBarMask.padding = new Vector4(_healthBarMask.padding.x, _healthBarMask.padding.y,
+            targHealth * _healthBarMaskWidth, _healthBarMask.padding.w);
     }
 
     private IEnumerator EndOfGameEvent(bool delay)
