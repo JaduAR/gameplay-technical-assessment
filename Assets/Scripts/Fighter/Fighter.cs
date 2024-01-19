@@ -126,16 +126,11 @@ public class Fighter : MonoBehaviour, IHasHealth
         else if (_isPunchLocked ) return;
         else
         {
-            var punchStateToUse = FighterState.Punch1;
+            var punchStateToUse = _lastPunchState == FighterState.Punch1? FighterState.Punch2 : FighterState.Punch1;
 
-            if (Time.time - _lastPunchTime <= _comboTime)
-            {
-                if (_lastPunchState == FighterState.Punch1)
-                    punchStateToUse = FighterState.Punch2;
-            }
-            else
+            if (Time.time - _lastPunchTime > _comboTime)
                 ResetCombo();
-            
+
             ChangeState(punchStateToUse);
             _lastPunchState = punchStateToUse;
         }
