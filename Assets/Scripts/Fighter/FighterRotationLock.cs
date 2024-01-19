@@ -22,8 +22,11 @@ public class FighterRotationLock : MonoBehaviour
     /// </summary>
     private void LookAtTarget()
     {
-        Vector3 directionToTarget = _targetFighter.position - transform.position;
-        Quaternion lookRotation = Quaternion.LookRotation(directionToTarget);
+        var directionToTarget = _targetFighter.position - transform.position;
+        directionToTarget.y = 0;
+        var lookRotation = Quaternion.LookRotation(directionToTarget);
+        lookRotation.x = 0;
+        lookRotation.z = 0;
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
     }
 }

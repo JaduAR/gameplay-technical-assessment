@@ -1,30 +1,57 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
 /// Controls the fighter's animation blending based on movement.
 /// </summary>
-[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(Fighter), typeof(Animator))]
 public class FighterAnimation : MonoBehaviour
 {
-    private                  Animator        _animator;
-    [Tooltip("Animation cross fade duration.")]
+    private Animator _animator;
+    private Fighter _fighter;
+    [Tooltip("Animation cross fade duration [seconds].")]
     [SerializeField] private float           _crossfadeDuration = 0.2f;
     private FighterState _lastState;
 
-    [Tooltip("Animation blending smooth time. Smaller values mean faster responsiveness, but more snappy movement.")]
+    [Tooltip("Animation blending smooth time [seconds]. Smaller values mean faster responsiveness, but more snappy movement.")]
     [SerializeField] private float _smoothTime = 0.2f;
 
     [Tooltip("Adjust this to compensate for the diagonal shift in positive strafeX animation.")]
     [SerializeField] private float _strafeXCompensationFactor;
+
+    [Tooltip("Time [seconds] it takes to freeze animations.")]
+    [SerializeField] private float _freezeAnimationsDuration = 1f;
 
     private float _currentStrafeXVelocity;
     private float _currentStrafeZVelocity;
 
     private float _currentStrafeX;
     private float _currentStrafeZ;
-    private void Start()
+    private void Awake()
     {
         _animator = GetComponent<Animator>();
+        _fighter = GetComponent<Fighter>();
+    }
+
+    private void OnEnable()
+    {
+        _fighter.OnStateChanged += OnFighterStateChanged;
+        _fighter.OnFreeze += FreezeAnimations;
+    }
+
+    private void OnDisable()
+    {
+        _fighter.OnStateChanged -= OnFighterStateChanged;
+        _fighter.OnFreeze -= FreezeAnimations;
+    }
+
+    /// <summary>
+    /// Called when fighter's state changes
+    /// </summary>
+    /// <param name="state">New fighter state</param>
+    private void OnFighterStateChanged(FighterState state)
+    {
+        PlayFighterStateAnimation(state);
     }
 
     /// <summary>
@@ -128,6 +155,27 @@ public class FighterAnimation : MonoBehaviour
         }
 
         _lastState = state;
+    }
+
+    public void FreezeAnimations()
+    {
+        StartCoroutine(FreezeAnimationsI());
+    }
+
+    private IEnumerator FreezeAnimationsI()
+    {
+        var startSpeed = _animator.speed;
+        var elapsed = 0f;
+
+        while (elapsed < _freezeAnimationsDuration)
+        {
+            elapsed += Time.deltaTime;
+            var progress = elapsed / _freezeAnimationsDuration;
+            _animator.speed = Mathf.SmoothStep(startSpeed, 0f, progress);
+            yield return new WaitForEndOfFrame();
+        }
+
+        _animator.speed = 0f;
     }
 
 }

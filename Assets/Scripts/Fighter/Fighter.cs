@@ -5,7 +5,6 @@ using UnityEngine;
 /// <summary>
 /// Represents a fighter.
 /// </summary>
-[RequireComponent(typeof(Animator))]
 public class Fighter : MonoBehaviour, IHasHealth
 {
     public static Fighter LocalFighter;
@@ -13,6 +12,11 @@ public class Fighter : MonoBehaviour, IHasHealth
     [SerializeField]
     [Tooltip("Set this to true if this is the fighter you'll be controlling through input")]
     private bool _isLocalFighter;
+
+    /// <summary>
+    /// When a fighter is frozen, it means his animations are stopped and he won't be able to move.
+    /// </summary>
+    public bool IsFrozen { get; private set; }
 
     [SerializeField]
     [Tooltip("The left hand collider that will be used to deal damage to the opponent fighter")]
@@ -56,8 +60,6 @@ public class Fighter : MonoBehaviour, IHasHealth
     [SerializeField] private FighterState _currentState = FighterState.Idle;
     [SerializeField] private FighterState _lastPunchState = FighterState.Punch2;
 
-    private FighterAnimation _fighterAnimation;
-
     /// <summary>
     /// The amount of time within which a second punch must be started to be considered a combo.
     /// </summary>
@@ -82,15 +84,34 @@ public class Fighter : MonoBehaviour, IHasHealth
     private bool _isHeavyPunchReady;
 
     /// <summary>
+    /// Invoked when player state changes.
+    /// </summary>
+    public Action<FighterState> OnStateChanged;
+
+    /// <summary>
     /// Invoked when player punches.
     /// </summary>
     public Action OnPunch;
+
+    /// <summary>
+    /// Invoked when player punch lands on his opponent.
+    /// </summary>
+    public Action OnPunchLanded;
+
+    /// <summary>
+    /// Invoked when player dies.
+    /// </summary>
+    public Action OnDie;
+
+    /// <summary>
+    /// Invoked when player freezes.
+    /// </summary>
+    public Action OnFreeze;
 
     private void Awake()
     {
         MaximumHealth = _maximumHealth;
         CurrentHealth = MaximumHealth;
-        _fighterAnimation = GetComponent<FighterAnimation>();
         if (_isLocalFighter) LocalFighter = this;
     }
 
@@ -102,7 +123,7 @@ public class Fighter : MonoBehaviour, IHasHealth
     {
         if (_currentState == newState) return;
         _currentState = newState;
-        _fighterAnimation.PlayFighterStateAnimation(_currentState);
+        OnStateChanged?.Invoke(_currentState);
         UpdateDamageRate();
     }
 
@@ -131,6 +152,7 @@ public class Fighter : MonoBehaviour, IHasHealth
     /// </summary>
     public void Punch()
     {
+        if (IsFrozen) return;
         if (_currentPunchCombo >= _neededComboPunches)
         {
             StartHeavyPunchCharge();
@@ -172,6 +194,7 @@ public class Fighter : MonoBehaviour, IHasHealth
                 _currentPunchCombo++;
                 break;
         }
+        OnPunchLanded?.Invoke();
     }
 
     /// <summary>
@@ -241,6 +264,7 @@ public class Fighter : MonoBehaviour, IHasHealth
     /// </summary>
     public void UnlockPunching()
     {
+        if (_currentState == FighterState.Charge) return; //Punching can't be unlocked while a heavy punch is being charged.
         DisableHandColliders();
         ChangeState(FighterState.Idle);
         _isPunchLocked = false;
@@ -269,6 +293,16 @@ public class Fighter : MonoBehaviour, IHasHealth
     private void Die()
     {
         Debug.Log($"{gameObject.name} died.");
+        OnDie?.Invoke();
+    }
+
+    /// <summary>
+    /// Freezes fighter's animations and disables his movement ability
+    /// </summary>
+    public void Freeze()
+    {
+        IsFrozen = true;
+        OnFreeze?.Invoke();
     }
 
 }
