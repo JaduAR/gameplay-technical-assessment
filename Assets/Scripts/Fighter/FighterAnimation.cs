@@ -3,31 +3,50 @@ using UnityEngine;
 /// <summary>
 /// Controls the fighter's animation blending based on movement.
 /// </summary>
-[RequireComponent(typeof(Animator), typeof(FighterMovement))]
+[RequireComponent(typeof(Animator))]
 public class FighterAnimation : MonoBehaviour
 {
     private                  Animator        _animator;
-    private                  FighterMovement _fighterMovement;
     [Tooltip("Animation cross fade duration.")]
     [SerializeField] private float           _crossfadeDuration = 0.2f;
-    [Tooltip("Animation blending smooth time. Smaller values mean faster responsiveness, but more snappy movement.")]
-    [SerializeField] private float        _smoothTime = 0.1f;
-    private float        _velocityX;
-    private float        _velocityZ;
     private FighterState _lastState;
+
+    [Tooltip("Animation blending smooth time. Smaller values mean faster responsiveness, but more snappy movement.")]
+    [SerializeField] private float _smoothTime = 0.2f;
+
+    [Tooltip("Adjust this to compensate for the diagonal shift in positive strafeX animation.")]
+    [SerializeField] private float _strafeXCompensationFactor;
+
+    private float _currentStrafeXVelocity;
+    private float _currentStrafeZVelocity;
+
+    private float _currentStrafeX;
+    private float _currentStrafeZ;
     private void Start()
     {
         _animator = GetComponent<Animator>();
-        _fighterMovement = GetComponent<FighterMovement>();
     }
-    
-    private void Update()
+
+    /// <summary>
+    /// Updates the movement parameters in the animator with smoothing.
+    /// </summary>
+    /// <param name="movementVector">The desired movement vector.</param>
+    public void UpdateMovement(Vector2 movementVector)
     {
-        var currentDirection = _fighterMovement.GetCurrentDirection();
-        var strafeX = Mathf.SmoothDamp(_animator.GetFloat("StrafeX"), currentDirection.y, ref _velocityZ, _smoothTime);
-        var strafeZ = Mathf.SmoothDamp(_animator.GetFloat("StrafeZ"), currentDirection.x, ref _velocityX, _smoothTime);
-        _animator.SetFloat("StrafeX", strafeX);
-        _animator.SetFloat("StrafeZ", strafeZ);
+        var radians = _animator.transform.rotation.eulerAngles.y * Mathf.Deg2Rad;
+        var cosY = Mathf.Cos(radians);
+        var sinY = Mathf.Sin(radians);
+        var strafeX = movementVector.x * cosY - movementVector.y * sinY;
+        var strafeZ = movementVector.x * sinY + movementVector.y * cosY;
+
+        // Apply the compensation factor only when StrafeX is positive to compensate for the shift in the positive StrafeX animation.
+        if (strafeX > 0)
+            strafeZ -= strafeX * _strafeXCompensationFactor;
+
+        _currentStrafeX = Mathf.SmoothDamp(_currentStrafeX, strafeX, ref _currentStrafeXVelocity, _smoothTime);
+        _currentStrafeZ = Mathf.SmoothDamp(_currentStrafeZ, strafeZ, ref _currentStrafeZVelocity, _smoothTime);
+        _animator.SetFloat("StrafeX", _currentStrafeX);
+        _animator.SetFloat("StrafeZ", _currentStrafeZ);
     }
 
     /// <summary>
