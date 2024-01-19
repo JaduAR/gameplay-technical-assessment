@@ -643,6 +643,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4decad3b5817744cbde9d4d5a6cc39e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _camera: {fileID: 1576269652}
   _fighters:
   - {fileID: 1347958246}
   - {fileID: 1952446456}
@@ -1443,9 +1444,9 @@ MonoBehaviour:
   m_LookaheadTime: 0
   m_LookaheadSmoothing: 0
   m_LookaheadIgnoreY: 0
-  m_XDamping: 2
-  m_YDamping: 2
-  m_ZDamping: 2
+  m_XDamping: 2.5
+  m_YDamping: 2.5
+  m_ZDamping: 2.5
   m_TargetMovementOnly: 1
   m_ScreenX: 0.5
   m_ScreenY: 0.5
@@ -2975,7 +2976,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1952446449}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 85b8e341eee7ce64abd305f7f5eb0635, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.15

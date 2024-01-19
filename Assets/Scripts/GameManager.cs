@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using Cinemachine;
 
 /// <summary>
 /// Manages game state and sequence.
@@ -8,6 +9,10 @@ using System.Collections.Generic;
 public partial class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+
+    [SerializeField]
+    [Tooltip("Game camera.")]
+    private CinemachineVirtualCamera _camera;
 
     /// <summary>
     /// Invoked when the game starts.
@@ -70,6 +75,7 @@ public partial class GameManager : MonoBehaviour
             fighter.Freeze();
         
         OnGameEnd?.Invoke();
+        _camera.GetCinemachineComponent<CinemachineFramingTransposer>().m_CameraDistance *= 0.5f;
     }
 
 }
