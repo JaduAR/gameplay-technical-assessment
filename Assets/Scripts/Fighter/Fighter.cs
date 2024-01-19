@@ -8,6 +8,12 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class Fighter : MonoBehaviour, IHasHealth
 {
+    public static Fighter LocalFighter;
+
+    [SerializeField]
+    [Tooltip("Set this to true if this is the fighter you'll be controlling through input")]
+    private bool _isLocalFighter;
+
     [SerializeField]
     [Tooltip("The left hand collider that will be used to deal damage to the opponent fighter")]
     private Collider _leftHandCollider;
@@ -75,11 +81,17 @@ public class Fighter : MonoBehaviour, IHasHealth
     /// </summary>
     private bool _isHeavyPunchReady;
 
+    /// <summary>
+    /// Invoked when player punches.
+    /// </summary>
+    public Action OnPunch;
+
     private void Awake()
     {
         MaximumHealth = _maximumHealth;
         CurrentHealth = MaximumHealth;
         _fighterAnimation = GetComponent<FighterAnimation>();
+        if (_isLocalFighter) LocalFighter = this;
     }
 
     /// <summary>
@@ -132,6 +144,7 @@ public class Fighter : MonoBehaviour, IHasHealth
                 ResetCombo();
 
             ChangeState(punchStateToUse);
+            OnPunch?.Invoke();
             _lastPunchState = punchStateToUse;
         }
         _lastPunchTime = Time.time;
@@ -183,6 +196,7 @@ public class Fighter : MonoBehaviour, IHasHealth
     {
         yield return new WaitUntil(() => _isHeavyPunchReady);
         ChangeState(FighterState.HeavyPunch);
+        OnPunch?.Invoke();
         _isHeavyPunchReady = false;
     }
 
@@ -190,9 +204,13 @@ public class Fighter : MonoBehaviour, IHasHealth
     public void TakeDamage(int damage)
     {
         CurrentHealth = Mathf.Max(CurrentHealth - damage, 0);
+        OnTakeDamage?.Invoke(damage);
         if (CurrentHealth <= 0)
             Die();
     }
+
+    /// <inheritdoc/>
+    public Action<int> OnTakeDamage { get; set; }
 
     /// <summary>
     /// Enables the damage-dealing hit box of the left hand

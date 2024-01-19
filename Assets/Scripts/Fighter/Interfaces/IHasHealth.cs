@@ -25,4 +25,9 @@ public interface IHasHealth
     /// </summary>
     /// <param name="damage">The amount of damage to be applied to this entity.</param>
     void TakeDamage(int damage);
+
+    /// <summary>
+    /// Invoked when entity takes damage
+    /// </summary>
+    Action<int> OnTakeDamage { get; }
 }

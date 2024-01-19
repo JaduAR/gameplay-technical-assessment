@@ -90,6 +90,10 @@ public class FighterAnimation : MonoBehaviour
 
                         break;
 
+                    case FighterState.Charge:
+                    case FighterState.HeavyPunch:
+                        break;
+
                     default:
                         _animator.CrossFade("Idle to P1", _crossfadeDuration);
 
@@ -105,9 +109,12 @@ public class FighterAnimation : MonoBehaviour
 
                         break;
 
+                    case FighterState.Charge:
+                    case FighterState.HeavyPunch:
+                        break;
+
                     default:
                         _animator.CrossFade("Idle to P2", _crossfadeDuration);
-
                         break;
                 }
                 break;

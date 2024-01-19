@@ -1425,6 +1425,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8013fa3b9307654ab973c1139b60601, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isLocalFighter: 1
   _leftHandCollider: {fileID: 1507680064}
   _rightHandCollider: {fileID: 392709082}
   _maximumHealth: 100
@@ -2205,6 +2206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8013fa3b9307654ab973c1139b60601, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isLocalFighter: 0
   _leftHandCollider: {fileID: 945147887}
   _rightHandCollider: {fileID: 982528281}
   _maximumHealth: 100
@@ -2255,6 +2257,54 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 116
   m_CollisionDetection: 0
+--- !u!114 &1952446460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1952446449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6811ca25e1b36d24c9f2b4f097851bf3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _safeDistance: 3
+  _escapeDistance: 2
+  _minMovementSpeed: 1
+  _maxMovementSpeed: 3
+  _stunDuration: 2
+  _shiftDirection: 0
+  _wallCheckDistance: 1
+  _wallCheckRaycastHeight: 0.5
+--- !u!114 &1952446461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1952446449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 717c7b519a4813144bb833504e4332a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _movementSpeed: 1
+--- !u!114 &1952446462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1952446449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d11618312eceeaf4585c9d7e9258a169, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _crossfadeDuration: 0.2
+  _smoothTime: 0.2
+  _strafeXCompensationFactor: 0.475
 --- !u!224 &2037148398 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5832878721094757132, guid: 517c3058076939d43be62584f352e60a, type: 3}

@@ -17,11 +17,12 @@ public class FighterMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the movement parameters in the fighter's animation.
+    /// Updates the movement parameters in the fighter's animation and ensures that it's normalized.
     /// </summary>
     /// <param name="direction">Movement direction vector</param>
     public void Move(Vector2 direction)
     {
-        _fighterAnimation.UpdateMovement(direction * _movementSpeed);
+        var normalizedDirection = Vector2.ClampMagnitude(direction, 1f);
+        _fighterAnimation.UpdateMovement(normalizedDirection * _movementSpeed);
     }
 }
