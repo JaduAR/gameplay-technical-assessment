@@ -62,7 +62,7 @@ ModelImporter:
       curves: []
       events:
       - time: 0.46904317
-        functionName: ResetToIdle
+        functionName: UnlockPunching
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

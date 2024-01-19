@@ -186,15 +186,6 @@ public class Fighter : MonoBehaviour, IHasHealth
         _isHeavyPunchReady = false;
     }
 
-    /// <summary>
-    /// Resets the fighter's state back to idle.
-    /// </summary>
-    public void ResetToIdle()
-    {
-        DisableHandColliders();
-        ChangeState(FighterState.Idle);
-    }
-
     /// <inheritdoc/>
     public void TakeDamage(int damage)
     {
@@ -232,8 +223,9 @@ public class Fighter : MonoBehaviour, IHasHealth
     /// </summary>
     public void UnlockPunching()
     {
+        DisableHandColliders();
+        ChangeState(FighterState.Idle);
         _isPunchLocked = false;
-        ResetToIdle();
     }
 
     /// <summary>
