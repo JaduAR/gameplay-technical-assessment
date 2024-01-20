@@ -40,22 +40,22 @@ AnimatorStateMachine:
     m_Position: {x: 400, y: -60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -1629489133581477968}
-    m_Position: {x: 400, y: 20, z: 0}
+    m_Position: {x: 400, y: 70, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4642734174302218737}
-    m_Position: {x: 400, y: 80, z: 0}
+    m_Position: {x: 520, y: 10, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 782757618665344276}
-    m_Position: {x: 400, y: 140, z: 0}
+    m_Position: {x: 640, y: -60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2917089634462690666}
-    m_Position: {x: 400, y: 200, z: 0}
+    m_Position: {x: 530, y: 150, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3428251615651310955}
-    m_Position: {x: 400, y: 260, z: 0}
+    m_Position: {x: 640, y: 70, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 147982308482071799}
-    m_Position: {x: 400, y: 320, z: 0}
+    m_Position: {x: 400, y: 300, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5650352000250077474}
     m_Position: {x: 400, y: 380, z: 0}
@@ -64,10 +64,10 @@ AnimatorStateMachine:
   m_EntryTransitions: []
   m_StateMachineTransitions: {}
   m_StateMachineBehaviours: []
-  m_AnyStatePosition: {x: 50, y: 20, z: 0}
+  m_AnyStatePosition: {x: 40, y: -80, z: 0}
   m_EntryPosition: {x: 50, y: 120, z: 0}
-  m_ExitPosition: {x: 730, y: 110, z: 0}
-  m_ParentStateMachinePosition: {x: 720, y: 10, z: 0}
+  m_ExitPosition: {x: 1270, y: 160, z: 0}
+  m_ParentStateMachinePosition: {x: 1340, y: -60, z: 0}
   m_DefaultState: {fileID: 6187807151449264282}
 --- !u!1102 &-2917089634462690666
 AnimatorState:
@@ -135,13 +135,25 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: StrafeZ
     m_Type: 1
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
+  - m_Name: AttackId
+    m_Type: 3
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 9100000}
+  - m_Name: LastAttackId
+    m_Type: 3
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -270,14 +282,16 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 4971018697914227748}
-    m_Position: {x: 310, y: 130, z: 0}
+    m_Position: {x: 300, y: 130, z: 0}
   m_ChildStateMachines:
   - serializedVersion: 1
     m_StateMachine: {fileID: -3405092607885073849}
-    m_Position: {x: 310, y: 230, z: 0}
+    m_Position: {x: 300, y: 220, z: 0}
   m_AnyStateTransitions: []
   m_EntryTransitions: []
-  m_StateMachineTransitions: {}
+  m_StateMachineTransitions:
+  - first: {fileID: -3405092607885073849}
+    second: []
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: 50, y: 20, z: 0}
   m_EntryPosition: {x: 50, y: 130, z: 0}
