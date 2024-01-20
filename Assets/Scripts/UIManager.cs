@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// Manages the game's UI.
@@ -12,9 +13,9 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Image _fadeZoomImage;
 
-    [Tooltip("Punch button that will be used to make the fighter punch.")]
+    [Tooltip("Punch button event trigger, will be used to make the fighter punch.")]
     [SerializeField]
-    private Button _punchButton;
+    private EventTrigger _punchButtonEventTrigger;
 
     [Tooltip("Button that restarts the scene, allowing the player to play again.")]
     [SerializeField]
@@ -28,12 +29,40 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Sprite _koSprite;
 
+    [Tooltip("Fighter input controller, needed for triggering input actions through UI.")]
+    [SerializeField]
+    private FighterInputController _fighterInput;
+
+    private bool _isHeavyPunchInProgress;
+
     private void OnEnable()
     {
         GameManager.Instance.OnGameStart += HandleGameStart;
         GameManager.Instance.OnGameEnd += HandleGameEnd;
         _playAgainButton.onClick.AddListener(() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex));
-        // Fighter.OnChargedAttackReady += HandleChargedAttackReady;
+
+        var pointerUpEntry = new EventTrigger.Entry
+        {
+            eventID = EventTriggerType.PointerUp
+        };
+        pointerUpEntry.callback.AddListener((_) => { _fighterInput.ReleasePunch(); });
+        _punchButtonEventTrigger.triggers.Add(pointerUpEntry);
+
+        var pointerDownEntry = new EventTrigger.Entry
+        {
+            eventID = EventTriggerType.PointerDown
+        };
+        pointerDownEntry.callback.AddListener((_) => OnClick_PunchButton());
+        _punchButtonEventTrigger.triggers.Add(pointerDownEntry);
+
+        _fighterInput.OnHeavyPunchReady += HandleHeavyPunchReady;
+    }
+
+    private void OnClick_PunchButton()
+    {
+        _fighterInput.ExecutePunch();
+        if (_isHeavyPunchInProgress)
+            ShakePunchButton();
     }
 
     private void OnDisable()
@@ -44,8 +73,8 @@ public class UIManager : MonoBehaviour
             GameManager.Instance.OnGameEnd -= HandleGameEnd;
         }
         _playAgainButton.onClick.RemoveAllListeners();
-        // Fighter.OnChargedAttackReady -= HandleChargedAttackReady;
-
+        _punchButtonEventTrigger.triggers.Clear();
+        _fighterInput.OnHeavyPunchReady -= HandleHeavyPunchReady;
     }
 
     private void HandleGameStart()
@@ -74,21 +103,41 @@ public class UIManager : MonoBehaviour
     private void HandleGameEnd()
     {
         FadeZoomImage(_koSprite, () => _playAgainButton.gameObject.SetActive(true));
-        _punchButton.gameObject.SetActive(false);
+        _punchButtonEventTrigger.gameObject.SetActive(false);
     }
 
     /// <summary>
     /// Handles the UI changes of charged attack being ready.
     /// </summary>
-    private void HandleChargedAttackReady()
+    /// <param name="ready">Indicates if heavy punch is ready or not.</param>
+    private void HandleHeavyPunchReady(bool ready)
     {
-        _punchButton.transform.DOScale(new Vector3(1.2f, 1.2f, 1.2f), 0.5f).SetLoops(-1, LoopType.Yoyo);
+        if (ready)
+        {
+            ResetPunchButton();
+            _punchButtonEventTrigger.transform.DOScale(new Vector3(1.2f, 1.2f, 1.2f), 0.2f).SetLoops(-1, LoopType.Yoyo);
+            _isHeavyPunchInProgress = true;
+        }
+        else
+            ResetPunchButton();
     }
 
-    // Stops pulsating the punch button.
-    public void StopPunchButtonPulsate()
+    /// <summary>
+    /// Shakes punch button to indicate charging heavy attack.
+    /// </summary>
+    private void ShakePunchButton()
     {
-        _punchButton.transform.DOKill();
-        _punchButton.transform.localScale = Vector3.one;
+        ResetPunchButton();
+        _punchButtonEventTrigger.transform.DOShakePosition(0.1f, 20f, 20).SetLoops(-1, LoopType.Yoyo);
+    }
+
+    /// <summary>
+    /// Resets punch button to normal state.
+    /// </summary>
+    private void ResetPunchButton()
+    {
+        _isHeavyPunchInProgress = false;
+        _punchButtonEventTrigger.transform.DOKill();
+        _punchButtonEventTrigger.transform.localScale = Vector3.one;
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,11 +11,25 @@ public class FighterInputController : MonoBehaviour
     private FighterMovement _fighterMovement;
     private Vector2         _movementInput;
     private Fighter         _fighter;
+    /// <summary>
+    /// Invoked when player's heavy punch is ready for execution.
+    /// </summary>
+    public Action<bool> OnHeavyPunchReady;
 
     private void Awake()
     {
         _fighterMovement = GetComponent<FighterMovement>();
         _fighter = GetComponent<Fighter>();
+    }
+
+    private void OnEnable()
+    {
+        _fighter.OnHeavyPunchReady += HeavyPunchReady;
+    }
+
+    private void OnDisable()
+    {
+        _fighter.OnHeavyPunchReady -= HeavyPunchReady;
     }
 
     /// <summary>
@@ -33,10 +48,35 @@ public class FighterInputController : MonoBehaviour
     public void OnPunch(InputAction.CallbackContext context)
     {
         if (context.performed)
-            _fighter.Punch();
-        
+            ExecutePunch();
+
         if (context.canceled)
-            _fighter.ReleaseHeavyPunch();
+            ReleasePunch();
+    }
+
+    /// <summary>
+    /// Executes punch.
+    /// </summary>
+    public void ExecutePunch()
+    {
+        _fighter.Punch();
+    }
+
+    /// <summary>
+    /// Releases punch button and attempts to execute heavy punch if ready.
+    /// </summary>
+    public void ReleasePunch()
+    {
+        _fighter.ReleaseHeavyPunch();
+    }
+
+    /// <summary>
+    /// Invoked when heavy punch is ready or executed.
+    /// </summary>
+    /// <param name="ready">Indicates if heavy punch is ready or not.</param>
+    private void HeavyPunchReady(bool ready)
+    {
+        OnHeavyPunchReady?.Invoke(ready);
     }
 
     private void Update()

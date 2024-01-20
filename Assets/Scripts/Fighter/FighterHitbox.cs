@@ -11,6 +11,10 @@ public class FighterHitbox : MonoBehaviour
     [Tooltip("Fighter who has this hitbox.")]
     [SerializeField] private Fighter _fighter;
 
+    [Tooltip("VFX that will be spawned if hitbox hits target.")]
+    [SerializeField] private GameObject _impactVfx;
+
+
     private void OnValidate()
     {
         if (_fighter == null)
@@ -23,5 +27,16 @@ public class FighterHitbox : MonoBehaviour
         var targetHealth = other.GetComponent<IHasHealth>();
         targetHealth?.TakeDamage(_fighter.CurrentDamageRate);
         _fighter.PunchLanded();
+        SpawnVfx(other.ClosestPoint(transform.position));
+    }
+
+    /// <summary>
+    /// Spawns a VFX on impact and destroys it.
+    /// </summary>
+    /// <param name="position">Position where the VFX will be spawned.</param>
+    private void SpawnVfx(Vector3 position)
+    {
+        var vfx = Instantiate(_impactVfx, position, Quaternion.identity);
+        Destroy(vfx, 1);
     }
 }

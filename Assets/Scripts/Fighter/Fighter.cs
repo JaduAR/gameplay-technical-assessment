@@ -108,6 +108,11 @@ public class Fighter : MonoBehaviour, IHasHealth
     /// </summary>
     public Action OnFreeze;
 
+    /// <summary>
+    /// Invoked when player's heavy punch is ready for execution or is executed, with a parameter indicating whether it's ready or not.
+    /// </summary>
+    public Action<bool> OnHeavyPunchReady;
+
     private void Awake()
     {
         MaximumHealth = _maximumHealth;
@@ -153,7 +158,7 @@ public class Fighter : MonoBehaviour, IHasHealth
     public void Punch()
     {
         if (IsFrozen) return;
-        if (_currentPunchCombo >= _neededComboPunches)
+        if (IsComboReady())
         {
             StartHeavyPunchCharge();
         }
@@ -170,6 +175,15 @@ public class Fighter : MonoBehaviour, IHasHealth
             _lastPunchState = punchStateToUse;
         }
         _lastPunchTime = Time.time;
+    }
+
+    /// <summary>
+    /// Indicates if combo is ready
+    /// </summary>
+    /// <returns>True if combo is ready</returns>
+    private bool IsComboReady()
+    {
+        return _currentPunchCombo >= _neededComboPunches;
     }
 
     /// <summary>
@@ -192,6 +206,8 @@ public class Fighter : MonoBehaviour, IHasHealth
             case FighterState.Punch1:
             case FighterState.Punch2:
                 _currentPunchCombo++;
+                if (IsComboReady())
+                    OnHeavyPunchReady?.Invoke(true);
                 break;
         }
         OnPunchLanded?.Invoke();
@@ -221,6 +237,7 @@ public class Fighter : MonoBehaviour, IHasHealth
         ChangeState(FighterState.HeavyPunch);
         OnPunch?.Invoke();
         _isHeavyPunchReady = false;
+        OnHeavyPunchReady?.Invoke(_isHeavyPunchReady);
     }
 
     /// <inheritdoc/>
