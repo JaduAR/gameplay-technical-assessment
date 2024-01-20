@@ -2197,6 +2197,8 @@ MonoBehaviour:
   _lastPunchState: 2
   _comboTime: 0.5
   _neededComboPunches: 2
+  _punchDamage: 10
+  _heavyPunchDamage: 100
 --- !u!114 &1347958247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3416,6 +3418,8 @@ MonoBehaviour:
   _lastPunchState: 2
   _comboTime: 0.5
   _neededComboPunches: 2
+  _punchDamage: 10
+  _heavyPunchDamage: 100
 --- !u!114 &1952446457
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3487,7 +3491,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 717c7b519a4813144bb833504e4332a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _movementSpeed: 0.25
+  _movementSpeed: 0.5
 --- !u!114 &1952446462
 MonoBehaviour:
   m_ObjectHideFlags: 0

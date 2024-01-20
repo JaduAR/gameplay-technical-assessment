@@ -7,6 +7,9 @@ using UnityEngine;
 /// </summary>
 public class Fighter : MonoBehaviour, IHasHealth
 {
+    /// <summary>
+    /// Instance of the local ( human controller ) fighter.
+    /// </summary>
     public static Fighter LocalFighter;
 
     [SerializeField]
@@ -25,11 +28,6 @@ public class Fighter : MonoBehaviour, IHasHealth
     [SerializeField]
     [Tooltip("The left hand collider that will be used to deal damage to the opponent fighter")]
     private Collider _rightHandCollider;
-
-    /// <summary>
-    /// Current fighter damage rate, used for calculating damage infliction on other fighters.
-    /// </summary>
-    public int CurrentDamageRate { get; private set; }
 
     [SerializeField]
     [Tooltip("The maximum health of this fighter. Usually 100")]
@@ -60,6 +58,8 @@ public class Fighter : MonoBehaviour, IHasHealth
     [SerializeField] private FighterState _currentState = FighterState.Idle;
     [SerializeField] private FighterState _lastPunchState = FighterState.Punch2;
 
+    #region Punch
+
     /// <summary>
     /// The amount of time within which a second punch must be started to be considered a combo.
     /// </summary>
@@ -68,8 +68,10 @@ public class Fighter : MonoBehaviour, IHasHealth
 
     private                  bool  _isChargingHeavyPunch = false;
     private                  float _lastPunchTime;
+
     [Tooltip("Amount of punches needed to initiate a charged attack")]
     [SerializeField] private int   _neededComboPunches = 2;
+
     private int _currentPunchCombo;
 
     /// <summary>
@@ -82,6 +84,21 @@ public class Fighter : MonoBehaviour, IHasHealth
     /// Indicates whether heavy punch was charged and is ready to be executed
     /// </summary>
     private bool _isHeavyPunchReady;
+
+    /// <summary>
+    /// Current fighter damage rate, used for calculating damage infliction on other fighters.
+    /// </summary>
+    public int CurrentDamageRate { get; private set; }
+
+    [Tooltip("Damage that will be applied per normal punch.")]
+    [SerializeField] private int _punchDamage;
+
+    [Tooltip("Damage that will be applied per heavy punch.")]
+    [SerializeField] private int _heavyPunchDamage;
+
+    #endregion
+
+    #region Events
 
     /// <summary>
     /// Invoked when player state changes.
@@ -113,6 +130,8 @@ public class Fighter : MonoBehaviour, IHasHealth
     /// </summary>
     public Action<bool> OnHeavyPunchReady;
 
+    #endregion
+
     private void Awake()
     {
         MaximumHealth = _maximumHealth;
@@ -141,10 +160,10 @@ public class Fighter : MonoBehaviour, IHasHealth
         {
             case FighterState.Punch1:
             case FighterState.Punch2:
-                CurrentDamageRate = 10;
+                CurrentDamageRate = _punchDamage;
                 break;
             case FighterState.HeavyPunch:
-                CurrentDamageRate = 100;
+                CurrentDamageRate = _heavyPunchDamage;
                 break;
             default:
                 CurrentDamageRate = 0;
@@ -309,7 +328,6 @@ public class Fighter : MonoBehaviour, IHasHealth
     /// </summary>
     private void Die()
     {
-        Debug.Log($"{gameObject.name} died.");
         OnDie?.Invoke();
     }
 
