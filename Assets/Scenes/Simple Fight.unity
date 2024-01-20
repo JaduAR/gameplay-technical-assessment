@@ -1117,6 +1117,10 @@ PrefabInstance:
       propertyPath: m_Direction
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5832878721094757133, guid: 517c3058076939d43be62584f352e60a, type: 3}
+      propertyPath: m_Interactable
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5832878721094757135, guid: 517c3058076939d43be62584f352e60a, type: 3}
       propertyPath: m_Name
       value: HealthBar
@@ -3742,6 +3746,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5832878721094757132, guid: 517c3058076939d43be62584f352e60a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5832878721094757133, guid: 517c3058076939d43be62584f352e60a, type: 3}
+      propertyPath: m_Interactable
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5832878721094757135, guid: 517c3058076939d43be62584f352e60a, type: 3}
