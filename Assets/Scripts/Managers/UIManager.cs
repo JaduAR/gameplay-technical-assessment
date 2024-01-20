@@ -31,20 +31,58 @@ public class UIManager : MonoBehaviour
         _instance = this;
     }
 
-    public void UpdatePlayerHealthBar(float healthPercentage)
+    public void UpdatePlayerHealthBar(float healthPercentage, bool isInstant = false)
     {
-        _playerHealthBar.fillAmount = healthPercentage;
+        if (isInstant)
+        {
+            _playerHealthBar.fillAmount = healthPercentage;
+        }
+        else 
+        { 
+            iTween.ValueTo(gameObject, iTween.Hash(
+                "from", _playerHealthBar.fillAmount,
+                "to", healthPercentage,
+                "onupdate", "UpdatePlayerHealthValueTo",
+                "time", 0.35f
+                ));
+        }
     }
 
-    public void UpdateOpponentHealthBar(float healthPercentage)
+    private void UpdatePlayerHealthValueTo(float val)
     {
-        _opponentHealthBar.fillAmount = healthPercentage;
+        _playerHealthBar.fillAmount = val;
+    }
+
+    public void UpdateOpponentHealthBar(float healthPercentage, bool isInstant = false)
+    {
+        if (isInstant)
+        {
+            _opponentHealthBar.fillAmount = healthPercentage;
+        }
+        else
+        {
+            iTween.ValueTo(gameObject, iTween.Hash(
+                "from", _opponentHealthBar.fillAmount,
+                "to", healthPercentage,
+                "onupdate", "UpdateOpponentHealthValueTo",
+                "time", 0.35f
+                ));
+        }
+    }
+
+    private void UpdateOpponentHealthValueTo(float val)
+    {
+        _opponentHealthBar.fillAmount = val;
     }
 
     public void ShowGameEnd(bool isPlayerWinner)
     {
         _gameWinRootGo.SetActive(true);
+
         _koImageGo.SetActive(true);
+        _koImageGo.transform.localScale = Vector3.zero;
+        iTween.ScaleTo(_koImageGo, Vector3.one, 0.5f);
+
         _gameWinPopUpGo.SetActive(false);
 
         if (isPlayerWinner)
