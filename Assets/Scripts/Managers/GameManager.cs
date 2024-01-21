@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     private Quaternion _playerStartRotation;
     private Vector3 _opponentStartPosition;
     private Quaternion _opponentStartRotation;
+    private bool _hasReachedEnd = false;
 
     private const float CHANCE_TO_AVOID = 0.75f;
 
@@ -42,10 +43,10 @@ public class GameManager : MonoBehaviour
         _cameraFollow.AddTarget(_opponentAvatar.transform);
 
         Health healthComponent = _playerAvatar.GetComponentInParent<Health>();
-        UIManager.Instance.UpdatePlayerHealthBar(healthComponent.CurrentHealth / healthComponent.MaxHealth, true);
+        UIManager.Instance.UpdatePlayerHealthBar(healthComponent.HealthPercentage, true);
 
         healthComponent = _opponentAvatar.GetComponentInParent<Health>();
-        UIManager.Instance.UpdateOpponentHealthBar(healthComponent.CurrentHealth / healthComponent.MaxHealth, true);
+        UIManager.Instance.UpdateOpponentHealthBar(healthComponent.HealthPercentage, true);
 
         _playerAvatar.OnDamageDone += OnAvatarTakeDamage;
         _opponentAvatar.OnDamageDone += OnAvatarTakeDamage;
@@ -59,8 +60,45 @@ public class GameManager : MonoBehaviour
         _opponentStartRotation = _opponentAvatar.transform.rotation;
     }
 
+    void ResetGame()
+    {
+        _playerAvatar.Reset();
+        _opponentAvatar.Reset();
+
+        Health healthComponent = _playerAvatar.GetComponentInParent<Health>();
+        healthComponent.Reset();
+
+        UIManager.Instance.UpdatePlayerHealthBar(healthComponent.HealthPercentage);
+
+        healthComponent = _opponentAvatar.GetComponentInParent<Health>();
+        healthComponent.Reset();
+
+        UIManager.Instance.UpdateOpponentHealthBar(healthComponent.HealthPercentage);
+
+        Opponent opponentComponent = _opponentAvatar.GetComponent<Opponent>();
+        if (opponentComponent)
+        {
+            opponentComponent.Reset();
+        }
+
+        _playerAvatar.transform.position = _playerStartPosition;
+        _playerAvatar.transform.rotation = _playerStartRotation;
+        _opponentAvatar.transform.position = _opponentStartPosition;
+        _opponentAvatar.transform.rotation = _opponentStartRotation;
+
+        _playerAvatar.AreActionsDisabled = false;
+        _opponentAvatar.AreActionsDisabled = false;
+
+        UIManager.Instance.HideGameEnd();
+
+        Time.timeScale = 1.0f;
+        _hasReachedEnd = false;
+    }
+
     private void OnGameEndConditionMet(bool isPlayerWinner)
     {
+        _hasReachedEnd = true;
+
         _playerAvatar.Stop();
         _opponentAvatar.Stop();
 
@@ -69,10 +107,10 @@ public class GameManager : MonoBehaviour
 
         UIManager.Instance.ShowGameEnd(isPlayerWinner);
 
-        StartCoroutine(Co_GameWin_Delayed());
+        StartCoroutine(Co_GameEndDelayed());
     }
 
-    private IEnumerator Co_GameWin_Delayed()
+    private IEnumerator Co_GameEndDelayed()
     {
         yield return new WaitForSecondsRealtime(2.0f);
 
@@ -88,18 +126,23 @@ public class GameManager : MonoBehaviour
 
     private void OnAvatarTakeDamage(Avatar avatarToDamage, float damage, bool isKO, Vector3 impactPoint)
     {
+        if (_hasReachedEnd) return;
+
         Health healthComponent = avatarToDamage.GetComponentInParent<Health>();
         if (healthComponent != null)
         {
             healthComponent.TakeDamage(damage);
 
+            //Handle VFXs and Sound
             if (isKO)
             {
                 Time.timeScale = 0.5f;
+
                 if (_hitKOVFXs.Count > 0)
                 {
                     PoolManager.Instance.Spawn(_hitKOVFXs[Random.Range(0, _hitKOVFXs.Count)], impactPoint, Quaternion.identity);
                 }
+                
                 AudioManager.Instance.PlayRandomKOSound();
             }
             else
@@ -133,7 +176,7 @@ public class GameManager : MonoBehaviour
                     }
                 }
 
-                UIManager.Instance.UpdateOpponentHealthBar(healthComponent.CurrentHealth / healthComponent.MaxHealth);
+                UIManager.Instance.UpdateOpponentHealthBar(healthComponent.HealthPercentage);
 
                 if (healthComponent.CurrentHealth <= 0.0f)
                 {
@@ -142,7 +185,7 @@ public class GameManager : MonoBehaviour
             }
             else // Player
             {
-                UIManager.Instance.UpdatePlayerHealthBar(healthComponent.CurrentHealth / healthComponent.MaxHealth);
+                UIManager.Instance.UpdatePlayerHealthBar(healthComponent.HealthPercentage);
 
                 if (healthComponent.CurrentHealth <= 0.0f)
                 {
@@ -162,36 +205,7 @@ public class GameManager : MonoBehaviour
 
     public void OnButtonEvent_GameEndContinue()
     {
-        _playerAvatar.Reset();
-        _opponentAvatar.Reset();
-
-        Health healthComponent = _playerAvatar.GetComponentInParent<Health>();
-        healthComponent.Reset();
-
-        UIManager.Instance.UpdatePlayerHealthBar(healthComponent.CurrentHealth / healthComponent.MaxHealth);
-
-        healthComponent = _opponentAvatar.GetComponentInParent<Health>();
-        healthComponent.Reset();
-
-        UIManager.Instance.UpdateOpponentHealthBar(healthComponent.CurrentHealth / healthComponent.MaxHealth);
-
-        Opponent opponentComponent = _opponentAvatar.GetComponent<Opponent>();
-        if (opponentComponent)
-        {
-            opponentComponent.Reset();
-        }
-
-        _playerAvatar.transform.position = _playerStartPosition;
-        _playerAvatar.transform.rotation = _playerStartRotation;
-        _opponentAvatar.transform.position = _opponentStartPosition;
-        _opponentAvatar.transform.rotation = _opponentStartRotation;
-
-        _playerAvatar.AreActionsDisabled = false;
-        _opponentAvatar.AreActionsDisabled = false;
-
-        UIManager.Instance.HideGameEnd();
-
-        Time.timeScale = 1.0f;
+        ResetGame();
     }
 
     public void OnButtonEvent_Quit()

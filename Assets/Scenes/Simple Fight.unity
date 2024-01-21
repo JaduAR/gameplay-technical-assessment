@@ -338,6 +338,11 @@ MonoBehaviour:
     - {fileID: 4184591511965154084, guid: 317b96794675470489845b63de1f3cec, type: 3}
     - {fileID: 9166308289866675352, guid: 9e69409af0964654ba3844e0576f4385, type: 3}
     poolSize: 030000000300000003000000030000000300000001000000
+--- !u!4 &250220238 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5292895070380104700, guid: 779543dcc0b3849a8a88a5e6b761d6fe, type: 3}
+  m_PrefabInstance: {fileID: 1347958240}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &270087067
 GameObject:
   m_ObjectHideFlags: 0
@@ -1019,13 +1024,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 853005246}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.4938641, y: 0.5060615, z: 0.4938641, w: 0.5060615}
+  m_LocalPosition: {x: 0.6440327, y: -0.0041032387, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1952446454}
-  m_RootOrder: 1
+  m_Father: {fileID: 1969277126}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &853005248
 CapsuleCollider:
@@ -1037,7 +1042,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.14
+  m_Radius: 0.22
   m_Height: 1.24
   m_Direction: 1
   m_Center: {x: 0, y: 0.55, z: 0}
@@ -2325,13 +2330,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1437269345}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.4938641, y: 0.5060615, z: 0.4938641, w: 0.5060615}
+  m_LocalPosition: {x: 0.6440327, y: -0.0041032387, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1347958247}
-  m_RootOrder: 2
+  m_Father: {fileID: 250220238}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &1437269347
 CapsuleCollider:
@@ -2343,7 +2348,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.14
+  m_Radius: 0.22
   m_Height: 1.24
   m_Direction: 1
   m_Center: {x: 0, y: 0.55, z: 0}
@@ -4030,6 +4035,11 @@ MonoBehaviour:
   _koImageScaleTo: {fileID: 1655531035}
   _gameWinPopUpGo: {fileID: 1899431299}
   _gameEndHeaderText: {fileID: 1755674744}
+--- !u!4 &1969277126 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8449560308753379806, guid: 75033f164cc974534b4d7870e2dc90e3, type: 3}
+  m_PrefabInstance: {fileID: 1952446448}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2028722733 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8336599394350716435, guid: 779543dcc0b3849a8a88a5e6b761d6fe, type: 3}

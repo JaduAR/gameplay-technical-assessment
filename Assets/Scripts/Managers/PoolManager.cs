@@ -19,8 +19,6 @@ public class PoolManager : MonoBehaviour
 
     private Dictionary<Transform, List<Transform>> m_pooledObjects = new Dictionary<Transform, List<Transform>>();
 
-    //private string debugString = "Creating new pool obj of ";
-
     void Awake()
     {
         if (instance != null)
@@ -74,7 +72,6 @@ public class PoolManager : MonoBehaviour
         //so create a new one
         if (newObj.gameObject.activeSelf)
         {
-            //GSRDebug.Log(debugString + prefab.name);
             newObj = Instantiate(prefab);
 
             m_pooledObjects[prefab].Add(newObj);

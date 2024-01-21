@@ -29,6 +29,9 @@ public class StateMachine : MonoBehaviour
 
         _currentState = newState;
 
-        _currentState.Enter(_agentAvatar);
+        if (_currentState != null)
+        {
+            _currentState.Enter(_agentAvatar);
+        }
     }
 }

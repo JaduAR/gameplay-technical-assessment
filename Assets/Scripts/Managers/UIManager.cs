@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -40,45 +39,20 @@ public class UIManager : MonoBehaviour
         else 
         {
             _playerHealthBar.UpdateLerpValueTo(healthPercentage);
-
-        //    iTween.ValueTo(gameObject, iTween.Hash(
-        //        "from", _playerHealthBar.fillAmount,
-        //        "to", healthPercentage,
-        //        "onupdate", "UpdatePlayerHealthValueTo",
-        //        "time", 0.35f
-        //        ));
         }
     }
-
-    //private void UpdatePlayerHealthValueTo(float val)
-    //{
-    //    _playerHealthBar.fillAmount = val;
-    //}
 
     public void UpdateOpponentHealthBar(float healthPercentage, bool isInstant = false)
     {
         if (isInstant)
         {
             _opponentHealthBar.SetValue(healthPercentage);
-            //_opponentHealthBar.fillAmount = healthPercentage;
         }
         else
         {
             _opponentHealthBar.UpdateLerpValueTo(healthPercentage);
-
-            //iTween.ValueTo(gameObject, iTween.Hash(
-            //    "from", _opponentHealthBar.fillAmount,
-            //    "to", healthPercentage,
-            //    "onupdate", "UpdateOpponentHealthValueTo",
-            //    "time", 0.35f
-            //    ));
         }
     }
-
-    //private void UpdateOpponentHealthValueTo(float val)
-    //{
-    //    _opponentHealthBar.fillAmount = val;
-    //}
 
     public void ShowGameEnd(bool isPlayerWinner)
     {
@@ -86,8 +60,6 @@ public class UIManager : MonoBehaviour
 
         _koImageScaleTo.gameObject.SetActive(true);
         _koImageScaleTo.Begin();
-
-        //iTween.ScaleTo(_koImageGo, Vector3.one, 0.5f);
 
         _gameWinPopUpGo.SetActive(false);
 

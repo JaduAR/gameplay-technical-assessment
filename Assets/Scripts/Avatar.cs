@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class Avatar : MonoBehaviour
@@ -10,13 +9,13 @@ public class Avatar : MonoBehaviour
     [SerializeField] 
     private SkinnedMeshRenderer _meshRenderer;
     [SerializeField]
-    private List<Attack> _comboAttacks = null;
+    private List<AttackTransition> _comboAttacks = null;
     [SerializeField]
     private List<SphereCollider> _attackColliders = null;
     [SerializeField]
     private List<GameObject> _handParticles = null;
     [SerializeField]
-    private Attack _chargeAttack = null;
+    private AttackTransition _chargeAttack = null;
     [SerializeField]
     private LayerMask _opponentLayerMask;
     [SerializeField]
@@ -38,7 +37,7 @@ public class Avatar : MonoBehaviour
     public bool IsMoving => _moveDirection.sqrMagnitude > 0;
 
     private Transform _targetTransform = null;
-    private Attack _currentAttack = null;
+    private AttackTransition _currentAttackTransition = null;
     private Vector2 _moveDirection = Vector2.zero;
     private Vector2 _lerpDirection = Vector2.zero;
     private Collider[] _hitColliders = new Collider[1];
@@ -47,11 +46,12 @@ public class Avatar : MonoBehaviour
     private bool _shouldDoFinalChargeAttack = false;
     private bool _isCurrentlyTransitioningToIdle = false;
     private bool _disableActions = false;
-    private bool _isBusy = false;
     private int _strafeXAnimID = -1;
     private int _strafeYAnimID = -1;
     private int _attackHits = 0;
     private float _lastAttackTime = 0;
+
+    private const string BASE_MOVEMENT_ANIM_NAME = "Base Movement";
 
     // Start is called before the first frame update
     void Start()
@@ -109,25 +109,26 @@ public class Avatar : MonoBehaviour
 
     private void HandleAttackTransitions()
     {
-        if (_currentAttack == null) return;
+        if (_currentAttackTransition == null) return;
         
         AnimatorStateInfo currentAnimationStateInfo = _animator.GetCurrentAnimatorStateInfo(0);
-        _isCurrentlyTransitioningToIdle = currentAnimationStateInfo.IsName(_currentAttack.IdleAnimationStateName);
+        _isCurrentlyTransitioningToIdle = currentAnimationStateInfo.IsName(_currentAttackTransition.IdleAnimationStateName);
 
         CheckForAttackDamage(currentAnimationStateInfo);
         CheckForNextAnimationToPlay(currentAnimationStateInfo);
     }
 
+    //Checks current attack transition to see if it can do damage and if so itll do OverlapSphere test to handle trigger collision of punches
     private void CheckForAttackDamage(AnimatorStateInfo animatorStateInfo)
     {
-        if (_currentAttack.CanDoDamage == false || _isCurrentlyTransitioningToIdle) return;
+        if (_currentAttackTransition.CanDoDamage == false || _isCurrentlyTransitioningToIdle) return;
 
         if (_attackColliders != null)
         {
-            if (_currentAttack.EnableCollisionAtTime >= 0)
+            if (_currentAttackTransition.EnableCollisionAtTime >= 0)
             {
-                SphereCollider sphereCollider = _attackColliders[(int)_currentAttack.HandIndex];
-                if (sphereCollider.gameObject.activeInHierarchy == false && animatorStateInfo.normalizedTime > _currentAttack.EnableCollisionAtTime)
+                SphereCollider sphereCollider = _attackColliders[(int)_currentAttackTransition.HandIndex];
+                if (sphereCollider.gameObject.activeInHierarchy == false && animatorStateInfo.normalizedTime > _currentAttackTransition.EnableCollisionAtTime)
                 {
                     int collisions = Physics.OverlapSphereNonAlloc(sphereCollider.transform.position, sphereCollider.radius, _hitColliders, _opponentLayerMask.value, QueryTriggerInteraction.Collide);
 
@@ -136,14 +137,15 @@ public class Avatar : MonoBehaviour
                         ++_attackHits;
                         sphereCollider.gameObject.SetActive(true);
 
-                        bool isKO = _currentAttack == _chargeAttack && _attackHits > _comboAttacks.Count;
-                        OnDamageDone?.Invoke(_hitColliders[0].gameObject.GetComponentInParent<Avatar>(), _currentAttack.Damage, _attackHits > _comboAttacks.Count, _hitColliders[0].ClosestPoint(sphereCollider.transform.position));
+                        bool isKO = _currentAttackTransition == _chargeAttack.NextAttackTransition && _attackHits > _comboAttacks.Count;
+                        OnDamageDone?.Invoke(_hitColliders[0].gameObject.GetComponentInParent<Avatar>(), _currentAttackTransition.Damage, _attackHits > _comboAttacks.Count, _hitColliders[0].ClosestPoint(sphereCollider.transform.position));
                     }
                 }
             }
         }
     }
 
+    //After current animation is complete itll check for next transition either to go to next attack or back to idle
     private void CheckForNextAnimationToPlay(AnimatorStateInfo animatorStateInfo)
     {
         if (animatorStateInfo.normalizedTime > 1f)
@@ -152,11 +154,11 @@ public class Avatar : MonoBehaviour
 
             if (_shouldDoFinalChargeAttack)
             {
-                if (_currentAttack != _chargeAttack)
+                if (_currentAttackTransition != _chargeAttack)
                 {
                     UpdateAttack(_chargeAttack);
                     
-                    if (_currentAttack.NextAttackTransition == null)
+                    if (_currentAttackTransition.NextAttackTransition == null)
                     {
                         _shouldDoFinalChargeAttack = false;
                     }
@@ -164,20 +166,20 @@ public class Avatar : MonoBehaviour
                 else
                 {
                     _shouldDoFinalChargeAttack = false;
-                    UpdateAttack(_currentAttack.NextAttackTransition);
+                    UpdateAttack(_currentAttackTransition.NextAttackTransition);
                 }
             }
-            else if (_shouldCombo && _currentAttack.NextAttackTransition != null && !animatorStateInfo.IsName(_currentAttack.NextAttackTransition.AnimationStateName))
+            else if (_shouldCombo && _currentAttackTransition.NextAttackTransition != null && !animatorStateInfo.IsName(_currentAttackTransition.NextAttackTransition.AnimationStateName))
             {
                 _lastAttackTime = Time.time;
-                UpdateAttack(_currentAttack.NextAttackTransition);
+                UpdateAttack(_currentAttackTransition.NextAttackTransition);
             }
             else
             {
-                if (!string.IsNullOrEmpty(_currentAttack.IdleAnimationStateName) && _isCurrentlyTransitioningToIdle == false)
+                if (!string.IsNullOrEmpty(_currentAttackTransition.IdleAnimationStateName) && _isCurrentlyTransitioningToIdle == false)
                 {
                     _isCurrentlyTransitioningToIdle = true;
-                    _animator.Play(_currentAttack.IdleAnimationStateName);
+                    _animator.Play(_currentAttackTransition.IdleAnimationStateName);
                 }
                 else
                 {
@@ -214,9 +216,9 @@ public class Avatar : MonoBehaviour
 
     public void Attack()
     {
-        if(_comboAttacks == null || _currentAttack == _chargeAttack) return;
+        if(_disableActions || _comboAttacks == null || _currentAttackTransition == _chargeAttack.NextAttackTransition) return;
 
-        if (_currentAttack == null)
+        if (_currentAttackTransition == null)
         {
             _lastAttackTime = Time.time;
             UpdateAttack(_comboAttacks[UnityEngine.Random.Range(0, 2)]);
@@ -231,13 +233,13 @@ public class Avatar : MonoBehaviour
         }
     }
 
-    private void UpdateAttack(Attack nextAttack)
+    private void UpdateAttack(AttackTransition nextAttack)
     {
-        _currentAttack = nextAttack;
-        _animator.Play(_currentAttack.AnimationStateName);
+        _currentAttackTransition = nextAttack;
+        _animator.Play(_currentAttackTransition.AnimationStateName);
 
         OnAttackStart?.Invoke();
-        EnableHandParticles(true, _currentAttack.HandIndex);
+        EnableHandParticles(true, _currentAttackTransition.HandIndex);
     }
 
     public void ResetAttack()
@@ -247,10 +249,10 @@ public class Avatar : MonoBehaviour
 
         _isCurrentlyTransitioningToIdle = false;
         _shouldCombo = false;
-        _currentAttack = null;
+        _currentAttackTransition = null;
         _attackHits = 0;
 
-        _animator.Play("Base Movement");
+        _animator.Play(BASE_MOVEMENT_ANIM_NAME);
     }
 
     public void Reset()

@@ -7,6 +7,7 @@ public class Health : MonoBehaviour
 
     private float _currentHealth = 0.0f;
     public float CurrentHealth => _currentHealth;
+    public float HealthPercentage => _maxHealth > 0.0f ? _currentHealth / _maxHealth : 0.0f;
     public float MaxHealth => _maxHealth;
 
     // Start is called before the first frame update

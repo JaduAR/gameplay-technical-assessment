@@ -6,9 +6,12 @@ public class AttackState : State
     private Avatar _avatarAgent = null;
     private Opponent _opponentComponent = null;
     private Coroutine _attackingCheckCoroutine = null;
+    private WaitForSeconds _attackCheckWait = new WaitForSeconds(2);
 
     private const float CHANCE_FOR_NEXT_ATTACK = 0.45f;
-    
+    private const float DISTANCE_TO_MOVE_CLOSER = 0.6f;
+    private const float DISTANCE_TO_MOVE_AWAY = 0.3f;
+
     public override void Enter(Avatar agent)
     {
         if (_opponentComponent == null)
@@ -31,7 +34,7 @@ public class AttackState : State
 
     public override void Update(Avatar agent)
     {
-        _opponentComponent.MoveToDesiredLocationFromTarget(0.6f, 0.3f);
+        _opponentComponent.MoveToDesiredLocationFromTarget(DISTANCE_TO_MOVE_CLOSER, DISTANCE_TO_MOVE_AWAY);
 
         if (_attackingCheckCoroutine == null)
         {
@@ -58,7 +61,7 @@ public class AttackState : State
 
     private IEnumerator Co_AttackingCheck()
     {
-        yield return new WaitForSeconds(2);
+        yield return _attackCheckWait;
 
         _opponentComponent.UpdateStateToIdle();
     }
