@@ -56,7 +56,6 @@ public class PlayerController : MonoBehaviour
     {
         HandleMovement();
         HandleAttack();
-        ChargeAttack();
     }
 
     private void HandleMovement()
@@ -74,7 +73,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleAttack()
     {
-        if (attackTimer <= 0) //This is just for preventing input spam
+        if (attackTimer <= 0)
         {
             if (isAttacking)
             {
@@ -93,6 +92,7 @@ public class PlayerController : MonoBehaviour
         {
             attackTimer -= Time.deltaTime;
         }
+        HandleCharge();
     }
 
     private void CheckForHit()
@@ -110,7 +110,7 @@ public class PlayerController : MonoBehaviour
                 {
                     consecutiveHit++;
 
-                    if (consecutiveHit == maxCombo)
+                    if (consecutiveHit >= maxCombo)
                     {
                         startChargeTimer = true;
                     }
@@ -135,23 +135,16 @@ public class PlayerController : MonoBehaviour
     {
         if (startChargeTimer)
         {
-
             chargeWaitTime += Time.deltaTime;
 
             if (chargeWaitTime >= chargeWaitMaxTime)
             {
-                EndWait();
+                EndCharge();
             }
         }
     }
 
-    private void EndWait()
-    {
-        startChargeTimer = false;
-        chargeWaitTime = 0;
-    }
-
-    private void ChargeAttack() //Strike, ChargingHS
+    private void HandleCharge()
     {
         WaitForCharge();
 
@@ -159,21 +152,26 @@ public class PlayerController : MonoBehaviour
         {
             attackTimeHeld += Time.deltaTime;
 
-            if (attackTimeHeld >= 0.5f)
+            if (attackTimeHeld >= 0.5f && !isCharging)
             {
-                isCharging = true;
-                animator.SetBool("IsCharging", true);
-
-
+                StartCharging();
             }
         }
     }
 
-    private void HeavyAttack()
+    private void EndCharge()
     {
-        //animator.SetBool("IsCharging", false);
-        animator.SetBool("HeavyCharged", true);
+        startChargeTimer = false;
+        chargeWaitTime = 0;
     }
+
+    private void StartCharging()
+    {
+        isCharging = true;
+        animator.SetBool("IsCharging", true);
+        EndCharge(); // Reset charge-related variables
+    }
+
 
     public void OnAttackDown()
     {
@@ -198,7 +196,7 @@ public class PlayerController : MonoBehaviour
         }
         if (attackTimeHeld >= chargingMaxTime)
         {
-            HeavyAttack(); //works! Continue here!
+            animator.SetBool("HeavyCharged", true);
         }
         attackButtonDown = false;
         attackTimeHeld = 0;
