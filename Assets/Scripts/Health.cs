@@ -10,7 +10,7 @@ public class Health : MonoBehaviour
     public float MaxHealth => _maxHealth;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         Reset();
     }

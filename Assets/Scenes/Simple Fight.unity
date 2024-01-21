@@ -862,6 +862,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 740868676}
+  - component: {fileID: 740868677}
   m_Layer: 5
   m_Name: HealthBar-Opponent
   m_TagString: Untagged
@@ -890,6 +891,20 @@ RectTransform:
   m_AnchoredPosition: {x: 1, y: 0}
   m_SizeDelta: {x: 1, y: 0}
   m_Pivot: {x: 1, y: 1}
+--- !u!114 &740868677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 740868675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5c2f18dc90bc04ca28e7260c15423e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _barInnerImage: {fileID: 923614310}
+  _time: 0.5
 --- !u!1 &838689120
 GameObject:
   m_ObjectHideFlags: 0
@@ -899,6 +914,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 838689121}
+  - component: {fileID: 838689122}
   m_Layer: 5
   m_Name: HealthBar-Player
   m_TagString: Untagged
@@ -927,6 +943,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &838689122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 838689120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5c2f18dc90bc04ca28e7260c15423e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _barInnerImage: {fileID: 915535552}
+  _time: 0.5
 --- !u!1 &848471323
 GameObject:
   m_ObjectHideFlags: 0
@@ -1119,7 +1149,7 @@ RectTransform:
   m_GameObject: {fileID: 923614308}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: -1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 270087068}
@@ -1932,7 +1962,7 @@ MonoBehaviour:
   _handParticles:
   - {fileID: 1424592217}
   - {fileID: 1158589326}
-  _chargeAttack: {fileID: 11400000, guid: e6f1e77eacea85742b3e57c04e8a2440, type: 2}
+  _chargeAttack: {fileID: 11400000, guid: 84d7db3544940e54493b424786c36a21, type: 2}
   _opponentLayerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -2714,6 +2744,7 @@ GameObject:
   - component: {fileID: 1655531034}
   - component: {fileID: 1655531033}
   - component: {fileID: 1655531032}
+  - component: {fileID: 1655531035}
   m_Layer: 5
   m_Name: KO
   m_TagString: Untagged
@@ -2779,6 +2810,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 242.5448, y: 242.5448}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1655531035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1655531031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a15d71d868c6f3c4c9e5e72edeecf566, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scaleFrom: {x: 0, y: 0, z: 0}
+  _scaleTo: {x: 1, y: 1, z: 1}
+  _time: 2
 --- !u!1 &1671256942
 GameObject:
   m_ObjectHideFlags: 0
@@ -3876,7 +3922,7 @@ MonoBehaviour:
   _handParticles:
   - {fileID: 1454212582}
   - {fileID: 1111792704}
-  _chargeAttack: {fileID: 11400000, guid: e6f1e77eacea85742b3e57c04e8a2440, type: 2}
+  _chargeAttack: {fileID: 11400000, guid: 84d7db3544940e54493b424786c36a21, type: 2}
   _opponentLayerMask:
     serializedVersion: 2
     m_Bits: 128
@@ -3978,10 +4024,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2054ee0ac11bb274cae9403ebe8cdf6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerHealthBar: {fileID: 915535552}
-  _opponentHealthBar: {fileID: 923614310}
+  _playerHealthBar: {fileID: 838689122}
+  _opponentHealthBar: {fileID: 740868677}
   _gameWinRootGo: {fileID: 848471323}
-  _koImageGo: {fileID: 1655531031}
+  _koImageScaleTo: {fileID: 1655531035}
   _gameWinPopUpGo: {fileID: 1899431299}
   _gameEndHeaderText: {fileID: 1755674744}
 --- !u!4 &2028722733 stripped

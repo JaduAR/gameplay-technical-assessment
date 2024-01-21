@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
     private Vector3 _opponentStartPosition;
     private Quaternion _opponentStartRotation;
 
-    private const float CHANCE_TO_AVOID = 0.25f;
+    private const float CHANCE_TO_AVOID = 0.75f;
 
     private void Start()
     {
@@ -40,6 +40,12 @@ public class GameManager : MonoBehaviour
 
         _cameraFollow.AddTarget(_playerAvatar.transform);
         _cameraFollow.AddTarget(_opponentAvatar.transform);
+
+        Health healthComponent = _playerAvatar.GetComponentInParent<Health>();
+        UIManager.Instance.UpdatePlayerHealthBar(healthComponent.CurrentHealth / healthComponent.MaxHealth, true);
+
+        healthComponent = _opponentAvatar.GetComponentInParent<Health>();
+        UIManager.Instance.UpdateOpponentHealthBar(healthComponent.CurrentHealth / healthComponent.MaxHealth, true);
 
         _playerAvatar.OnDamageDone += OnAvatarTakeDamage;
         _opponentAvatar.OnDamageDone += OnAvatarTakeDamage;
