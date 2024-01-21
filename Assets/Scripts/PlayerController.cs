@@ -16,8 +16,6 @@ public class PlayerController : MonoBehaviour
     int health = 100;
     int damage = 10;
 
-
-
     private bool isAttacking;
     private bool attackButtonDown;
     float attackCD = 1f;
@@ -58,6 +56,36 @@ public class PlayerController : MonoBehaviour
         HandleAttack();
     }
 
+    public void OnAttackDown()
+    {
+        attackButtonDown = true;
+    }
+
+    public void OnAttackUp()
+    {
+        if (!isAttacking && attackTimeHeld <= 0.5f)
+        {
+            isAttacking = true;
+        }
+        else
+        {
+            CheckForCombo();
+        }
+
+        if (isCharging)
+        {
+            isCharging = false;
+            animator.SetBool("IsCharging", false);
+        }
+        if (attackTimeHeld >= chargingMaxTime)
+        {
+            animator.SetBool("HeavyCharged", true);
+        }
+        attackButtonDown = false;
+        attackTimeHeld = 0;
+
+    }
+
     private void HandleMovement()
     {
         float inputHor = Input.GetAxis("Horizontal");
@@ -95,6 +123,17 @@ public class PlayerController : MonoBehaviour
         HandleCharge();
     }
 
+    private void CheckForCombo()
+    {
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle to P1") && isAttacking)
+        {
+            if (attackCoroutine != null)
+                StopCoroutine(attackCoroutine);
+            CheckForHit();
+            attackCoroutine = StartCoroutine(ExitAttack(animator.GetCurrentAnimatorStateInfo(0).length));
+        }
+    }
+
     private void CheckForHit()
     {
 
@@ -120,18 +159,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void CheckForCombo()
-    {
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle to P1") && isAttacking)
-        {
-            if (attackCoroutine != null)
-                StopCoroutine(attackCoroutine);
-            CheckForHit();
-            attackCoroutine = StartCoroutine(ExitAttack(animator.GetCurrentAnimatorStateInfo(0).length));
-        }
-    }
-
-    private void WaitForCharge()
+    private void StartChargeTimer()
     {
         if (startChargeTimer)
         {
@@ -139,14 +167,14 @@ public class PlayerController : MonoBehaviour
 
             if (chargeWaitTime >= chargeWaitMaxTime)
             {
-                EndCharge();
+                EndChargeTimer();
             }
         }
     }
 
     private void HandleCharge()
     {
-        WaitForCharge();
+        StartChargeTimer();
 
         if (attackButtonDown && (startChargeTimer || isCharging))
         {
@@ -159,48 +187,17 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void EndCharge()
-    {
-        startChargeTimer = false;
-        chargeWaitTime = 0;
-    }
-
     private void StartCharging()
     {
         isCharging = true;
         animator.SetBool("IsCharging", true);
-        EndCharge(); // Reset charge-related variables
+        EndChargeTimer(); // Reset charge-related variables
     }
 
-
-    public void OnAttackDown()
+    private void EndChargeTimer()
     {
-        attackButtonDown = true;
-    }
-
-    public void OnAttackUp()
-    {
-        if (!isAttacking && attackTimeHeld <= 0.5f)
-        {
-            isAttacking = true;
-        }
-        else
-        {
-            CheckForCombo();
-        }
-
-        if (isCharging)
-        {
-            isCharging = false;
-            animator.SetBool("IsCharging", false);
-        }
-        if (attackTimeHeld >= chargingMaxTime)
-        {
-            animator.SetBool("HeavyCharged", true);
-        }
-        attackButtonDown = false;
-        attackTimeHeld = 0;
-
+        startChargeTimer = false;
+        chargeWaitTime = 0;
     }
 
     IEnumerator ExitAttack(float delay = 0)
@@ -211,5 +208,4 @@ public class PlayerController : MonoBehaviour
         attackCoroutine = null;
         consecutiveHit = 0;
     }
-
 }
