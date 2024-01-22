@@ -132,7 +132,7 @@ public class PlayerController : Character
         animator.Play("Charge to Heavy Punch");
         currentMove = attackMoves[1];
         CheckForHit(attackMoves[1].damage);
-
+        currentMove = null;
     }
 
     private void ComboTimer()
@@ -175,6 +175,7 @@ public class PlayerController : Character
                     if (ComboExists() && readyCombo.isChargeable)
                     {
                         waitForCharge = true;
+                        GameManager.i.uiManager.ChargeReadyTextActive(true);
                     }
                     hitOnce = true;
                 }
@@ -236,6 +237,7 @@ public class PlayerController : Character
     private void EndChargeTimer()
     {
         waitForCharge = false;
+        GameManager.i.uiManager.ChargeReadyTextActive(false);
         waitForChargeTimer = 0;
     }
 }

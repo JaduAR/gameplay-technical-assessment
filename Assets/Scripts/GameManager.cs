@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -18,5 +19,17 @@ public class GameManager : MonoBehaviour
 
         player = FindObjectOfType<PlayerController>();
         opponent = FindObjectOfType<Opponent>();
+    }
+
+    public void TriggerLevelEnd()
+    {
+        uiManager.DisplayLevelEnd();
+        Time.timeScale = 0;
+    }
+
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(0);
+        Time.timeScale = 1;
     }
 }

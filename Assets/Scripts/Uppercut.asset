@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5e7526d66db44ad8a58f42e2b4f644b, type: 3}
   m_Name: Uppercut
   m_EditorClassIdentifier: 
-  id: 1
   damage: 100
-  RequiredCombo: 
+  RequiredCombo:
+  - {fileID: 11400000, guid: ae9e85761c5d740d38c658d178f171e6, type: 2}
+  - {fileID: 11400000, guid: ae9e85761c5d740d38c658d178f171e6, type: 2}
   isChargeable: 1

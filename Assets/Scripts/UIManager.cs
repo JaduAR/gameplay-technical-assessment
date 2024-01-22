@@ -6,6 +6,9 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private Slider opponentHealthBar;
+    [SerializeField] private GameObject chargeReadyText;
+    [SerializeField] private GameObject levelEndPopup;
+    [SerializeField] private GameObject attackButton;
 
     private void Start()
     {
@@ -21,5 +24,16 @@ public class UIManager : MonoBehaviour
     public void UpdateOpponentHealth()
     {
         opponentHealthBar.value = GameManager.i.opponent.Health;
+    }
+
+    public void ChargeReadyTextActive(bool value)
+    {
+        chargeReadyText.SetActive(value);
+    }
+
+    public void DisplayLevelEnd()
+    {
+        levelEndPopup.SetActive(true);
+        attackButton.SetActive(false);
     }
 }

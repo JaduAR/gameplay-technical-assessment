@@ -23,7 +23,7 @@ public class Character : MonoBehaviour
 
         if(health <= 0)
         {
-            Debug.Log("Dead");
+            GameManager.i.TriggerLevelEnd();
         }
     }
 }
