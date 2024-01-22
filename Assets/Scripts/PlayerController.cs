@@ -3,10 +3,11 @@ using UnityEngine;
 
 public enum AttackState
 {
-    Idle,
-    Attack,
+    None,
+    Punch,
+    DoublePunch,
     Charging,
-    HeavyAttack
+    Uppercut
 }
 
 public class PlayerController : MonoBehaviour
@@ -17,24 +18,24 @@ public class PlayerController : MonoBehaviour
     int damage = 10;
 
     private bool isAttacking;
-    private bool attackButtonDown;
-    float attackCD = 1f;
+    private bool punchPressed;
+    float attackCD = 0f;
     float attackTimer;
 
-    float attackTimeHeld;
+    float punchPressedTime;
 
     private Coroutine attackCoroutine;
 
     /// <summary>
     /// Combo Vars
     /// </summary>
-    int maxCombo = 2;
-    private bool startChargeTimer;
-    private bool isCharging;
+    private int maxCombo = 2;
     private int consecutiveHit;
-    float chargeWaitTime;
-    float chargeWaitMaxTime = 1f;
-    float chargingMaxTime = 1.5f;
+    private bool isCharging;
+    private bool waitForCharge;
+    float waitForChargeTimer;
+    float waitForChargeMax = 1f;
+    float uppercutChargeMax = 1.25f;
 
 
 
@@ -58,12 +59,12 @@ public class PlayerController : MonoBehaviour
 
     public void OnAttackDown()
     {
-        attackButtonDown = true;
+        punchPressed = true;
     }
 
     public void OnAttackUp()
     {
-        if (!isAttacking && attackTimeHeld <= 0.5f)
+        if (!isAttacking && punchPressedTime <= 0.5f)
         {
             isAttacking = true;
         }
@@ -77,12 +78,12 @@ public class PlayerController : MonoBehaviour
             isCharging = false;
             animator.SetBool("IsCharging", false);
         }
-        if (attackTimeHeld >= chargingMaxTime)
+        if (punchPressedTime >= uppercutChargeMax)
         {
-            animator.SetBool("HeavyCharged", true);
+            animator.SetBool("UppercutReady", true);
         }
-        attackButtonDown = false;
-        attackTimeHeld = 0;
+        punchPressed = false;
+        punchPressedTime = 0;
 
     }
 
@@ -105,7 +106,7 @@ public class PlayerController : MonoBehaviour
         {
             if (isAttacking)
             {
-                animator.SetBool("Attack", true);
+                animator.SetBool("Punch", true);
                 attackTimer = attackCD;
 
                 CheckForHit();
@@ -151,7 +152,7 @@ public class PlayerController : MonoBehaviour
 
                     if (consecutiveHit >= maxCombo)
                     {
-                        startChargeTimer = true;
+                        waitForCharge = true;
                     }
                     hitOnce = true;
                 }
@@ -161,11 +162,11 @@ public class PlayerController : MonoBehaviour
 
     private void StartChargeTimer()
     {
-        if (startChargeTimer)
+        if (waitForCharge)
         {
-            chargeWaitTime += Time.deltaTime;
+            waitForChargeTimer += Time.deltaTime;
 
-            if (chargeWaitTime >= chargeWaitMaxTime)
+            if (waitForChargeTimer >= waitForChargeMax)
             {
                 EndChargeTimer();
             }
@@ -176,11 +177,11 @@ public class PlayerController : MonoBehaviour
     {
         StartChargeTimer();
 
-        if (attackButtonDown && (startChargeTimer || isCharging))
+        if (punchPressed && (waitForCharge || isCharging))
         {
-            attackTimeHeld += Time.deltaTime;
+            punchPressedTime += Time.deltaTime;
 
-            if (attackTimeHeld >= 0.5f && !isCharging)
+            if (punchPressedTime >= 0.5f && !isCharging)
             {
                 StartCharging();
             }
@@ -196,14 +197,14 @@ public class PlayerController : MonoBehaviour
 
     private void EndChargeTimer()
     {
-        startChargeTimer = false;
-        chargeWaitTime = 0;
+        waitForCharge = false;
+        waitForChargeTimer = 0;
     }
 
     IEnumerator ExitAttack(float delay = 0)
     {
         yield return new WaitForSeconds(delay);
-        animator.SetBool("Attack", false);
+        animator.SetBool("Punch", false);
         isAttacking = false;
         attackCoroutine = null;
         consecutiveHit = 0;
