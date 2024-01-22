@@ -31,6 +31,7 @@ public class Character : MonoBehaviour
 
         if (health <= 0)
         {
+            GameManager.i.uiManager.UpdateOpponentHealth();
             GameManager.i.TriggerLevelEnd();
         }
     }
