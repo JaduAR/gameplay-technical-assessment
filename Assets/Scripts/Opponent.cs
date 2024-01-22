@@ -11,17 +11,15 @@ public enum EnemyState{
 public class Opponent : Character
 {
     private EnemyState currentState = EnemyState.Idle;
-    private PlayerController player;
 
     private void Start()
     {
-        player = FindObjectOfType<PlayerController>();
         StartCoroutine(StartStateSwitchTimer());
     }
 
     private void Update()
     {
-        transform.LookAt(player.transform);
+        transform.LookAt(GameManager.i.player.transform);
 
         switch (currentState)
         {
@@ -35,6 +33,12 @@ public class Opponent : Character
                 animator.SetFloat("StrafeZ", 0.5f);
                 break;
         }
+    }
+
+    public override void TakeDamage(int _damage)
+    {
+        base.TakeDamage(_damage);
+        GameManager.i.uiManager.UpdateOpponentHealth();
     }
 
     private void SetState(EnemyState newState)

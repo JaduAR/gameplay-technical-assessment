@@ -1,14 +1,16 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : Character
 {
     [SerializeField] private float moveSpeed;
     [SerializeField] private Collider[] attackColliders;
-    int health = 100;
-    int damage = 10;
+    [SerializeField] AttackSO[] attackMoves;
+    private AttackSO currentMove;
+    private List<AttackSO> movesInCombo;
 
-    private bool isAttacking;
+    //private bool isAttacking;
     float attackCD = 0f;
     float attackTimer;
 
@@ -25,7 +27,7 @@ public class PlayerController : Character
     private int comboCounter;
     private int consecutiveHit;
     private float comboTimer;
-    private float comboMaxTime = 1f;
+    private float comboMaxTime = 0.5f;
 
 
     /// <summary>
@@ -37,14 +39,6 @@ public class PlayerController : Character
     float waitForChargeMax = 1f;
     float chargeHeldTime;
     float uppercutChargeMax = 1.25f;
-
-    private Opponent opponent;
-
-
-    private void Start()
-    {
-        opponent = FindObjectOfType<Opponent>();
-    }
 
     private void Update()
     {
@@ -60,9 +54,9 @@ public class PlayerController : Character
 
     public void OnAttackUp()
     {
-        if (!isAttacking && chargeHeldTime < punchMinHoldTime)
+        if (!currentMove && chargeHeldTime < punchMinHoldTime)
         {
-            isAttacking = true;
+            currentMove = attackMoves[0];
         }
 
         if (isCharging)
@@ -72,7 +66,7 @@ public class PlayerController : Character
         }
         if (chargeHeldTime >= uppercutChargeMax)
         {
-            animator.Play("Charge to Heavy Punch");
+            Uppercut();
         }
 
         punchPressed = false;
@@ -88,7 +82,7 @@ public class PlayerController : Character
         animator.SetFloat("StrafeX", -inputVer);
         animator.SetFloat("StrafeZ", inputHor);
 
-        transform.LookAt(opponent.transform);
+        transform.LookAt(GameManager.i.opponent.transform);
 
         rb.velocity = (transform.forward * inputHor + transform.right * -inputVer).normalized;
     }
@@ -98,13 +92,12 @@ public class PlayerController : Character
     {
         if (attackTimer <= 0)
         {
-            if (isAttacking)
+            if (currentMove == attackMoves[0])
             {
                 Punch();
-                CheckForHit();
+                CheckForHit(attackMoves[0].damage);
                 attackTimer = attackCD;
-                isAttacking = false;
-                //Punch();
+                currentMove = null;
             }
         }
         else
@@ -134,6 +127,13 @@ public class PlayerController : Character
 
     }
 
+    private void Uppercut()
+    {
+        animator.Play("Charge to Heavy Punch");
+        CheckForHit(attackMoves[1].damage);
+
+    }
+
     private void ComboTimer()
     {
         if (inCombo)
@@ -153,7 +153,7 @@ public class PlayerController : Character
 
     }
 
-    private void CheckForHit()
+    private void CheckForHit(int damage)
     {
 
         for (int i = 0; i < attackColliders.Length; i++)
@@ -166,6 +166,7 @@ public class PlayerController : Character
                     continue;
                 if (!hitOnce && consecutiveHit < maxCombo)
                 {
+                    GameManager.i.opponent.TakeDamage(damage);
                     consecutiveHit++;
 
                     if (consecutiveHit >= maxCombo)
