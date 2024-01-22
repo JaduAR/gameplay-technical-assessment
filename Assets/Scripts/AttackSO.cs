@@ -6,6 +6,6 @@ using UnityEngine;
 public class AttackSO : ScriptableObject
 {
     public int damage;
-    public List<AttackSO> RequiredCombo;
+    public List<AttackSO> RequiredCombo = new List<AttackSO>();
     public bool isChargeable;
 }

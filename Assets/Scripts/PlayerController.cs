@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class PlayerController : Character
 {
@@ -8,7 +9,7 @@ public class PlayerController : Character
     [SerializeField] private Collider[] attackColliders;
     [SerializeField] AttackSO[] attackMoves;
     private AttackSO currentMove;
-    private List<AttackSO> movesInCombo;
+    private List<AttackSO> movesInCombo = new List<AttackSO>();
 
     //private bool isAttacking;
     float attackCD = 0f;
@@ -22,9 +23,9 @@ public class PlayerController : Character
     /// <summary>
     /// Combo Vars
     /// </summary>
+    private AttackSO readyCombo;
     private bool inCombo;
     private int maxCombo = 2;
-    private int comboCounter;
     private int consecutiveHit;
     private float comboTimer;
     private float comboMaxTime = 0.5f;
@@ -119,7 +120,6 @@ public class PlayerController : Character
 
         inCombo = true;
         comboTimer = comboMaxTime;
-        comboCounter++;
         animator.SetBool("InCombo", true);
         leftPunch = !leftPunch;
         animator.SetBool("LeftPunch", leftPunch);
@@ -130,6 +130,7 @@ public class PlayerController : Character
     private void Uppercut()
     {
         animator.Play("Charge to Heavy Punch");
+        currentMove = attackMoves[1];
         CheckForHit(attackMoves[1].damage);
 
     }
@@ -150,6 +151,8 @@ public class PlayerController : Character
         inCombo = false;
         consecutiveHit = 0;
         animator.SetBool("InCombo", false);
+        movesInCombo.Clear();
+        readyCombo = null;
 
     }
 
@@ -167,9 +170,9 @@ public class PlayerController : Character
                 if (!hitOnce && consecutiveHit < maxCombo)
                 {
                     GameManager.i.opponent.TakeDamage(damage);
+                    movesInCombo.Add(currentMove);
                     consecutiveHit++;
-
-                    if (consecutiveHit >= maxCombo)
+                    if (ComboExists() && readyCombo.isChargeable)
                     {
                         waitForCharge = true;
                     }
@@ -178,6 +181,20 @@ public class PlayerController : Character
             }
         }
     }
+
+    private bool ComboExists()
+    {
+        foreach (AttackSO move in attackMoves)
+        {
+            if (move.RequiredCombo.SequenceEqual(movesInCombo))
+            {
+                readyCombo = move;
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private void StartChargeTimer()
     {
