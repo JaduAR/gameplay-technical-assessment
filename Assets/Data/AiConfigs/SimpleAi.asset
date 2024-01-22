@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63863add0885e1046a5e380ca031c60c, type: 3}
+  m_Name: SimpleAi
+  m_EditorClassIdentifier: 
+  _avoidanceProbability: 0.9
+  _movementTime: {x: 0.5, y: 1.5}
+  _movementSpeed: {x: 1, y: 1}
+  _bashTime: 1
+  _attackStartEvent: {fileID: 11400000, guid: 5a47ffbbb0ef52d4f9a72aadd1d6bc73, type: 2}
+  _attackCompleteEvent: {fileID: 11400000, guid: b328b5c6509466d4784308b7dacc4b0b, type: 2}
