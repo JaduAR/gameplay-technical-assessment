@@ -241,7 +241,7 @@ public class PlayerController : Character
         waitForChargeTimer = 0;
     }
 
-    public void ActivateColliders(string whichPart) //Called by Animation with Events
+    /*public void ActivateColliders(string whichPart) //Called by Animation with Events
     {
         var collider = attackColliders[0];
         switch (whichPart)
@@ -258,13 +258,13 @@ public class PlayerController : Character
         }
 
         collider.enabled = true;
-        StartCoroutine(DeactivateColliders(collider));
+        //StartCoroutine(DeactivateColliders(collider));
     }
-
+    //Not working perfectly yet
     public IEnumerator DeactivateColliders(Collider collider)
     {
         yield return new WaitForEndOfFrame();
 
         collider.enabled = false;
-    }
+    }*/ 
 }
