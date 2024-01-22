@@ -64,6 +64,7 @@ public class AttackSequenceManager : MonoBehaviour
                 _heavyBehavior.ReceivePunch();
                 HealthManager.Instance.ExecutePunchDamage(punchPerformed);
                 SoundManager.Instance.PlayPunchSfx();
+                HitEffectManager.Instance.ExecuteHitEffect();
             }   
         }
 
