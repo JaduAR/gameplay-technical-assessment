@@ -2,22 +2,22 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class AvatarBuilder : MonoBehaviour
-{
+public class AvatarBuilder : MonoBehaviour {
     [SerializeField] private GameObject _rootObject;
     [SerializeField] private Animator _animator;
+    [SerializeField] private Transform lookAtTarget;
 
-    private void Awake()
-    {
+    private void Awake() {
         BuildHumanAvatarWithBoneMapping(_rootObject, _animator, _boneMapping);
     }
 
-    private static void BuildHumanAvatarWithBoneMapping(GameObject gameObject, Animator animator, IReadOnlyDictionary<string, string> boneMapping)
-    {
-        var humanDescription = new HumanDescription
-        {
-            human = boneMapping.Select(mapping =>
-            {
+    private void Update() {
+        LookAtTarget();
+    }
+
+    private static void BuildHumanAvatarWithBoneMapping(GameObject gameObject, Animator animator, IReadOnlyDictionary<string, string> boneMapping) {
+        var humanDescription = new HumanDescription {
+            human = boneMapping.Select(mapping => {
                 var bone = new HumanBone { humanName = mapping.Key, boneName = mapping.Value };
                 bone.limit.useDefaultValues = true;
                 return bone;
@@ -26,9 +26,23 @@ public class AvatarBuilder : MonoBehaviour
 
         animator.avatar = UnityEngine.AvatarBuilder.BuildHumanAvatar(gameObject, humanDescription);
     }
-    
-    private readonly IReadOnlyDictionary<string, string> _boneMapping = new Dictionary<string, string>()
-    {
+
+    private bool AnimationComplete() {
+        return _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1;
+    }
+
+    private void LookAtTarget() {
+        if (lookAtTarget == null) return;
+
+        Vector3 direction = lookAtTarget.position - transform.position;
+        direction.y = 0;
+
+        if (direction.magnitude < 0.1) return; 
+
+        Quaternion lookRotation = Quaternion.LookRotation(direction);
+    }
+
+    private readonly IReadOnlyDictionary<string, string> _boneMapping = new Dictionary<string, string>() {
         {"Chest", "Chest_Jnt"},
         {"Left Little Proximal", "Left_PinkyFinger1_Jnt"},
         {"RightLowerArm", "Right_LowerArm_Jnt"},
@@ -82,4 +96,35 @@ public class AvatarBuilder : MonoBehaviour
         {"RightShoulder", "Right_Shoulder_Jnt"},
         {"Right Ring Distal", "Right_RingFinger3_Jnt"}
     };
+
+    public void Strafe(float z, float x) {
+        _animator.SetFloat("StrafeX", -x);
+        _animator.SetFloat("StrafeZ", z);
+    }
+
+    public string CurrentClip() {
+        AnimatorClipInfo[] currentClips = _animator.GetCurrentAnimatorClipInfo(0);
+        if (currentClips.Length > 0) {
+            return currentClips[0].clip.name;
+        }
+
+        return string.Empty;
+    }
+
+    public void SetHoldPunch(bool state) {
+        if (CurrentClip() == "Idle to Charge" && !state) {
+            if (AnimationComplete()) {
+                PlayAnimation("Charge to Heavy Punch");
+            } else {
+                PlayAnimation("P1 to Idle");
+            }
+            return;
+        }
+
+        PlayAnimation("Idle to Charge");
+    }
+
+    public void PlayAnimation(string anim) {
+        _animator.Play(anim);
+    }
 }
