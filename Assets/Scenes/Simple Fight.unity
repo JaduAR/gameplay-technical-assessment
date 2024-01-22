@@ -209,7 +209,7 @@ MonoBehaviour:
   _avatarMovement: {fileID: 64482902}
   _player: {fileID: 1591673365}
   _delayToNextMove: 1
-  _chanceToIdle: 0.7
+  _chanceToIdle: 0.5
   _chanceToMoveToPlayer: 0.5
   _playerDir: {x: 0, y: 0, z: 0}
 --- !u!1 &93316485
