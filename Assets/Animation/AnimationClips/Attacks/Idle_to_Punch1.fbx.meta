@@ -60,7 +60,14 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.53739613
+        functionName: ActivateColliders
+        data: LeftPunch
+        objectReferenceParameter: {fileID: 11500000, guid: 919d34d2fb6e647b4a5f9d6c6f45a915, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
