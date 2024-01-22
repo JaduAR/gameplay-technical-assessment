@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5e7526d66db44ad8a58f42e2b4f644b, type: 3}
   m_Name: Punch
   m_EditorClassIdentifier: 
-  attackType: 0
   damage: 5
-  RequiredCombo: 
+  RequiredCombo: []
   isChargeable: 0

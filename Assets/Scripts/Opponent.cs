@@ -35,9 +35,9 @@ public class Opponent : Character
         }
     }
 
-    public override void TakeDamage(int _damage)
+    public override void TakeDamage(int _damage, Transform _attackPos)
     {
-        base.TakeDamage(_damage);
+        base.TakeDamage(_damage, _attackPos);
         GameManager.i.uiManager.UpdateOpponentHealth();
     }
 

@@ -169,7 +169,7 @@ public class PlayerController : Character
                     continue;
                 if (!hitOnce && consecutiveHit < maxCombo)
                 {
-                    GameManager.i.opponent.TakeDamage(damage);
+                    GameManager.i.opponent.TakeDamage(damage, attackColliders[i].transform);
                     movesInCombo.Add(currentMove);
                     consecutiveHit++;
                     if (ComboExists() && readyCombo.isChargeable)
@@ -239,5 +239,32 @@ public class PlayerController : Character
         waitForCharge = false;
         GameManager.i.uiManager.ChargeReadyTextActive(false);
         waitForChargeTimer = 0;
+    }
+
+    public void ActivateColliders(string whichPart) //Called by Animation with Events
+    {
+        var collider = attackColliders[0];
+        switch (whichPart)
+        {
+            case "LeftPunch":
+                collider = attackColliders[0];
+                
+            break;
+
+            case "RightPunch":
+                collider = attackColliders[1];
+               
+                break;
+        }
+
+        collider.enabled = true;
+        StartCoroutine(DeactivateColliders(collider));
+    }
+
+    public IEnumerator DeactivateColliders(Collider collider)
+    {
+        yield return new WaitForEndOfFrame();
+
+        collider.enabled = false;
     }
 }

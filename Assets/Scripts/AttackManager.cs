@@ -4,15 +4,8 @@ using UnityEngine;
 
 public class AttackManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public static void CreatePunchEffect(Transform spawnTransform)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        var attackEffect = Instantiate(GameManager.i.assetHolder.attackEffectPrefab, spawnTransform.position, Quaternion.identity);
     }
 }

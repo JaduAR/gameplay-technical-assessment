@@ -17,13 +17,23 @@ public class Character : MonoBehaviour
 
     }
 
-    public virtual void TakeDamage(int _damage)
+    public virtual void TakeDamage(int _damage, Transform _attackPos)
     {
-        health -= _damage;
+        StartCoroutine(TakeDamageDelay(_damage, _attackPos));
+    }
 
-        if(health <= 0)
+    private IEnumerator TakeDamageDelay(int _damage, Transform _attackPos)
+    {
+        yield return new WaitForSeconds(0.2f);
+
+        health -= _damage;
+        AttackManager.CreatePunchEffect(_attackPos);
+
+        if (health <= 0)
         {
             GameManager.i.TriggerLevelEnd();
         }
     }
+
+    
 }

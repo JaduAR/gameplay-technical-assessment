@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager i;
+    public AssetHolder assetHolder;
     public UIManager uiManager;
     public Opponent opponent;
     public PlayerController player;
@@ -23,6 +24,12 @@ public class GameManager : MonoBehaviour
 
     public void TriggerLevelEnd()
     {
+        StartCoroutine(LevelEndDelay());
+    }
+
+    private IEnumerator LevelEndDelay()
+    {
+        yield return new WaitForSeconds(0.3f);
         uiManager.DisplayLevelEnd();
         Time.timeScale = 0;
     }
