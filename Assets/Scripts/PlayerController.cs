@@ -1,15 +1,6 @@
 using System.Collections;
 using UnityEngine;
 
-public enum AttackState
-{
-    None,
-    Punch,
-    DoublePunch,
-    Charging,
-    Uppercut
-}
-
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float moveSpeed;
@@ -18,19 +9,24 @@ public class PlayerController : MonoBehaviour
     int damage = 10;
 
     private bool isAttacking;
-    private bool punchPressed;
     float attackCD = 0f;
     float attackTimer;
 
-    float punchPressedTime;
 
-    private Coroutine attackCoroutine;
+    private bool punchPressed;
+    private bool leftPunch = true;
+    float punchPressedTime;
+    float punchMinHoldTime = 0.5f;
 
     /// <summary>
     /// Combo Vars
     /// </summary>
+    private bool inCombo;
     private int maxCombo = 2;
+    private int comboCounter;
     private int consecutiveHit;
+    private float comboTimer;
+    private float comboMaxTime = 1f;
     private bool isCharging;
     private bool waitForCharge;
     float waitForChargeTimer;
@@ -55,6 +51,7 @@ public class PlayerController : MonoBehaviour
     {
         HandleMovement();
         HandleAttack();
+        ComboTimer();
     }
 
     public void OnAttackDown()
@@ -64,13 +61,9 @@ public class PlayerController : MonoBehaviour
 
     public void OnAttackUp()
     {
-        if (!isAttacking && punchPressedTime <= 0.5f)
+        if (!isAttacking && punchPressedTime < punchMinHoldTime)
         {
             isAttacking = true;
-        }
-        else
-        {
-            CheckForCombo();
         }
 
         if (isCharging)
@@ -82,6 +75,8 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetBool("UppercutReady", true);
         }
+        else animator.SetBool("UppercutReady", false);
+
         punchPressed = false;
         punchPressedTime = 0;
 
@@ -100,21 +95,26 @@ public class PlayerController : MonoBehaviour
         rb.velocity = (transform.forward * inputHor + transform.right * -inputVer).normalized;
     }
 
+
     private void HandleAttack()
     {
         if (attackTimer <= 0)
         {
             if (isAttacking)
             {
-                animator.SetBool("Punch", true);
                 attackTimer = attackCD;
+                animator.SetTrigger("Punch");
 
+                inCombo = true;
+                comboTimer = comboMaxTime;
+                comboCounter++;
+                animator.SetBool("InCombo", true);
                 CheckForHit();
+                isAttacking = false;
+                leftPunch = !leftPunch;
+                animator.SetBool("LeftPunch", leftPunch);
 
-                if (attackCoroutine == null)
-                {
-                    attackCoroutine = StartCoroutine(ExitAttack(0.2f));
-                }
+                //Punch();
             }
         }
         else
@@ -122,17 +122,31 @@ public class PlayerController : MonoBehaviour
             attackTimer -= Time.deltaTime;
         }
         HandleCharge();
+
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("P1 to P2") ||
+            animator.GetCurrentAnimatorStateInfo(0).IsName("P2 to P1"))
+        {
+            animator.ResetTrigger("Punch");
+        }
     }
 
-    private void CheckForCombo()
+    private void ComboTimer()
     {
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle to P1") && isAttacking)
+        if (inCombo)
         {
-            if (attackCoroutine != null)
-                StopCoroutine(attackCoroutine);
-            CheckForHit();
-            attackCoroutine = StartCoroutine(ExitAttack(animator.GetCurrentAnimatorStateInfo(0).length));
+            comboTimer -= Time.deltaTime;
+
+            if (comboTimer <= 0)
+                EndCombo();
         }
+    }
+
+    private void EndCombo()
+    {
+        inCombo = false;
+        consecutiveHit = 0;
+        animator.SetBool("InCombo", false);
+
     }
 
     private void CheckForHit()
@@ -181,7 +195,7 @@ public class PlayerController : MonoBehaviour
         {
             punchPressedTime += Time.deltaTime;
 
-            if (punchPressedTime >= 0.5f && !isCharging)
+            if (punchPressedTime >= punchMinHoldTime && !isCharging)
             {
                 StartCharging();
             }
@@ -190,8 +204,10 @@ public class PlayerController : MonoBehaviour
 
     private void StartCharging()
     {
+        if(!isCharging)
+            animator.SetBool("IsCharging", true);
+
         isCharging = true;
-        animator.SetBool("IsCharging", true);
         EndChargeTimer(); // Reset charge-related variables
     }
 
@@ -199,14 +215,5 @@ public class PlayerController : MonoBehaviour
     {
         waitForCharge = false;
         waitForChargeTimer = 0;
-    }
-
-    IEnumerator ExitAttack(float delay = 0)
-    {
-        yield return new WaitForSeconds(delay);
-        animator.SetBool("Punch", false);
-        isAttacking = false;
-        attackCoroutine = null;
-        consecutiveHit = 0;
     }
 }
