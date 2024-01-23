@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(Animator))]
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
@@ -12,9 +13,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     public float movementSpeed = 7f;
 
+    private Animator _animator => GetComponent<Animator>();
 
-
-    CharacterController Character => GetComponent<CharacterController>();
+    private CharacterController Character => GetComponent<CharacterController>();
 
     // Update is called once per frame
     void Update()
@@ -26,22 +27,32 @@ public class PlayerController : MonoBehaviour
     {
         //return 0, -1, or 1 exactly(assuming a digital input such as
         //a keyboard or joystick button).
-        return (Input.GetAxisRaw(verticalInputAxis) * - 1f); // Inverted
+
+        return (Input.GetAxis(verticalInputAxis)); // Inverted
     }
 
     public float GetVerticalMovementInput()
     {
         //return 0, -1, or 1 exactly(assuming a digital input such as
         //a keyboard or joystick button).
-        return Input.GetAxisRaw(horizontalInputAxis) ; // Inverted
+        return Input.GetAxis(horizontalInputAxis) ; 
     }
 
     private Vector3 GetMovementDirection()
     {
         Vector3 _velocity = Vector3.zero;
 
-        _velocity += transform.right * GetHorizontalMovementInput();
-        _velocity += transform.forward * GetVerticalMovementInput();
+        float _horizontalMovement = GetHorizontalMovementInput();
+        float _verticalMovement = GetVerticalMovementInput();
+
+        if (_animator)
+        {
+            _animator.SetFloat("StrafeX", Mathf.Clamp(_horizontalMovement, -1f, 1f));
+            _animator.SetFloat("StrafeZ", Mathf.Clamp(_verticalMovement, -1f, 1f));
+        }
+
+        _velocity += transform.right * _horizontalMovement * -1f;
+        _velocity += transform.forward * _verticalMovement;
 
         //If necessary, clamp movement vector to magnitude of 1f;
         if (_velocity.magnitude > 1f)

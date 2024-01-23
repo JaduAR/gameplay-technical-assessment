@@ -35757,7 +35757,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: cb1032e2c8ac84b3da42051a3b5d290c, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -35831,6 +35831,19 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.56, z: 0}
+--- !u!114 &1347958248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1347958241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2eb0164efa4414c44848765072880a03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HitCounter: 3
 --- !u!1001 &1350220650
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -37973,8 +37986,9 @@ GameObject:
   - component: {fileID: 1423291755}
   - component: {fileID: 1423291754}
   - component: {fileID: 1423291753}
+  - component: {fileID: 1423291756}
   m_Layer: 5
-  m_Name: Attack
+  m_Name: AttackButtonTap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38043,7 +38057,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1423291754}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1423291756}
+        m_TargetAssemblyTypeName: TapController, Assembly-CSharp
+        m_MethodName: Tap
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1423291754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38082,6 +38108,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1423291751}
   m_CullTransparentMesh: 1
+--- !u!114 &1423291756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1423291751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c04b4930d8aa5764fbca20fb0ff76b5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1431124572
 PrefabInstance:
   m_ObjectHideFlags: 0
