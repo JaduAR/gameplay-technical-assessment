@@ -3,28 +3,32 @@ using UnityEngine;
 // This scripts rotates a GameObject towards a target
 public class RotateTowardsTarget : MonoBehaviour
 {
-    [SerializeField] private float _rotationSpeed = 50;
-    
-    private Vector3 _previousPosition;
-    private float _maxRadiansDelta = 1;
+    [SerializeField] 
+    private float _rotationSpeed = 100f;
 
-    [SerializeField] private Transform _targetTransform;
+    [SerializeField] 
+    private Transform _targetTransform;
 
-    void Update()
+    private void LookToTarget()
     {
         if (_targetTransform == null) return;
 
-        Vector3 currentDirection = _targetTransform.position - _previousPosition;
+        Vector3 _direction = (_targetTransform.position - transform.position).normalized;
 
-        Vector3 targetDirection = Vector3.RotateTowards(currentDirection, 
-                                                        transform.forward, 
-                                                        _maxRadiansDelta,
-                                                        Time.deltaTime);
+        Quaternion _lookRotation = Quaternion.LookRotation(
+                                                                new Vector3(_direction.x,
+                                                                                0f,
+                                                                                _direction.z)
+                                                            );
 
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, 
-                                                                Quaternion.LookRotation(targetDirection),
-                                                                Time.deltaTime * _rotationSpeed);
-        
-        _previousPosition = transform.position;
+        transform.rotation = Quaternion.Slerp(transform.rotation,
+                                                _lookRotation,
+                                                Time.deltaTime * _rotationSpeed);
     }
+
+    void Update()
+    {
+        LookToTarget();
+    }
+
 }
