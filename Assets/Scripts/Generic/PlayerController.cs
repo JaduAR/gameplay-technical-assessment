@@ -1,21 +1,19 @@
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(Fighter))]
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
-    public string horizontalInputAxis = "Horizontal";
+    public string _horizontalInputAxis = "Horizontal";
     [SerializeField]
-    public string verticalInputAxis = "Vertical";
+    public string _verticalInputAxis = "Vertical";
 
     //Movement speed;
     [SerializeField]
-    public float movementSpeed = 7f;
+    public float _movementSpeed = 1f;
 
-    private Animator _animator => GetComponent<Animator>();
-
-    private CharacterController Character => GetComponent<CharacterController>();
+    private CharacterController _character => GetComponent<CharacterController>();
 
     // Update is called once per frame
     void Update()
@@ -28,47 +26,49 @@ public class PlayerController : MonoBehaviour
         //return 0, -1, or 1 exactly(assuming a digital input such as
         //a keyboard or joystick button).
 
-        return (Input.GetAxis(verticalInputAxis)); // Inverted
+        return (Input.GetAxis(_verticalInputAxis)); // Inverted
     }
 
     public float GetVerticalMovementInput()
     {
         //return 0, -1, or 1 exactly(assuming a digital input such as
         //a keyboard or joystick button).
-        return Input.GetAxis(horizontalInputAxis) ; 
+        return Input.GetAxis(_horizontalInputAxis) ; 
     }
 
     private Vector3 GetMovementDirection()
     {
-        Vector3 _velocity = Vector3.zero;
+        float horizontalMovement = GetHorizontalMovementInput();
+        float verticalMovement = GetVerticalMovementInput();
 
-        float _horizontalMovement = GetHorizontalMovementInput();
-        float _verticalMovement = GetVerticalMovementInput();
+        Fighter fighter = GetComponent<Fighter>();
 
-        if (_animator)
+        if (fighter)
         {
-            _animator.SetFloat("StrafeX", Mathf.Clamp(_horizontalMovement, -1f, 1f));
-            _animator.SetFloat("StrafeZ", Mathf.Clamp(_verticalMovement, -1f, 1f));
+            fighter.SetAnim("StrafeX", Mathf.Clamp(horizontalMovement, -1f, 1f));
+            fighter.SetAnim("StrafeZ", Mathf.Clamp(verticalMovement, -1f, 1f));
         }
 
-        _velocity += transform.right * _horizontalMovement * -1f;
-        _velocity += transform.forward * _verticalMovement;
+        Vector3 velocity = Vector3.zero;
+
+        velocity += transform.right * horizontalMovement * -1f;
+        velocity += transform.forward * verticalMovement;
 
         //If necessary, clamp movement vector to magnitude of 1f;
-        if (_velocity.magnitude > 1f)
-            _velocity.Normalize();
+        if (velocity.magnitude > 1f)
+            velocity.Normalize();
 
-        return _velocity;
+        return velocity;
     }
 
     private Vector3 GetMovementVelocity(){
         //Calculate (normalized) movement direction;
-        Vector3 _velocity = GetMovementDirection();
+        Vector3 velocity = GetMovementDirection();
 
         //Multiply (normalized) velocity with movement speed;
-        _velocity *= movementSpeed;
+        velocity *= _movementSpeed;
 
-        return _velocity;
+        return velocity;
     }
 
     private void Move()
@@ -77,7 +77,7 @@ public class PlayerController : MonoBehaviour
 
         if (_direction.magnitude >= 0.1f)
         {
-            Character.Move(_direction * Time.deltaTime);
+            _character.Move(_direction * Time.deltaTime);
         }
     }
 

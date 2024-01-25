@@ -3,8 +3,6 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class Fighter : MonoBehaviour
 {
-    private Animator _animator => GetComponent<Animator>();
-
     [SerializeField]
     public FighterState CurrentFighterState;
 
@@ -68,10 +66,29 @@ public class Fighter : MonoBehaviour
         }
     }
 
-
-    public void SetAnim(string triggerName)
+    /// <summary>
+    /// Set animator parameter (trigger)
+    /// </summary>
+    /// <param name="parameterName"></param>
+    public void SetAnim(string parameterName)
     {
-        if (_animator) _animator.SetTrigger(triggerName);
+        Animator _animator = GetComponent<Animator>();
+        if (!_animator) return;
+        
+        _animator.SetTrigger(parameterName);
+    }
+
+    /// <summary>
+    /// Set animator parameter (float)
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="parameterName"></param>
+    public void SetAnim(string parameterName, float value)
+    {
+        Animator _animator = GetComponent<Animator>();
+        if (!_animator) return;
+
+        _animator.SetFloat(parameterName,value);
     }
 
     /// <summary>
