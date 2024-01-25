@@ -1,5 +1,4 @@
-
-    public interface IDamageable
-    {
-        void Hit(int damageValue);
-    }
+public interface IDamageable
+{
+    void Hit(int damageValue);
+}

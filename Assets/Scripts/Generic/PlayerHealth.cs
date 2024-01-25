@@ -3,13 +3,13 @@ using UnityEngine;
 public class PlayerHealth : HealthComponent
 {
     public delegate void LifeUpdateAction(string tag, int currentHealth);
-    public static event LifeUpdateAction OnLifeUpdate;
+    public static event LifeUpdateAction OnHealtheUpdate;
 
     public override void ResetHealth()
     {
         base.ResetHealth();
-        if(OnLifeUpdate!= null) 
-            OnLifeUpdate(gameObject.tag, CurrentHealth);
+        if(OnHealtheUpdate!= null) 
+            OnHealtheUpdate(gameObject.tag, CurrentHealth);
     }
 
     public override void Hit(int damageValue)
@@ -17,8 +17,9 @@ public class PlayerHealth : HealthComponent
         base.Hit(damageValue);
         if (CurrentHealth > -1)
         {
-            if (OnLifeUpdate != null) 
-                OnLifeUpdate(gameObject.tag, CurrentHealth);
+            //Debug.Log("CurrentHealth : " + CurrentHealth);
+            if (OnHealtheUpdate != null) 
+                OnHealtheUpdate(gameObject.tag, CurrentHealth);
         }
     }
 

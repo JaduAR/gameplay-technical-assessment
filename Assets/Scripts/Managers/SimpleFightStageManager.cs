@@ -1,17 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
 public class SimpleFightStageManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+
+    public static SimpleFightStageManager Instance;
+
+
+    private void Awake()
     {
-        
+        Instance = this;
     }
 
-    // Update is called once per frame
-    void Update()
+    // Start is called before the first frame update
+    void Start()
     {
         
     }

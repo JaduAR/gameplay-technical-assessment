@@ -44,7 +44,7 @@ using UnityEngine;
             if (CurrentHealth > 0)
             {
                 CurrentHealth -= damageValue;
-
+                
                 if (CurrentHealth < 1)
                 {
                     if(OnDeath!= null)

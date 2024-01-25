@@ -6,7 +6,7 @@ public class HitBoxCollider : MonoBehaviour
     {
         if (other.CompareTag("Player2"))
         {
-            Debug.Log("HIT" + other.gameObject.name);
+            //Debug.Log("HIT" + other.gameObject.name);
             gameObject.SetActive(false);
         }
     }
