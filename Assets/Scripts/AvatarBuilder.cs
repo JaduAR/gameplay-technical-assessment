@@ -9,22 +9,32 @@ public class AvatarBuilder : MonoBehaviour
 
     private void Awake()
     {
-        BuildHumanAvatarWithBoneMapping(_rootObject, _animator, _boneMapping);
+        BuildHumanAvatarWithBoneMapping(_rootObject, 
+                                        _animator, 
+                                        _boneMapping);
     }
 
-    private static void BuildHumanAvatarWithBoneMapping(GameObject gameObject, Animator animator, IReadOnlyDictionary<string, string> boneMapping)
+    private static void BuildHumanAvatarWithBoneMapping(GameObject gameObject, 
+                                                        Animator animator, 
+                                                        IReadOnlyDictionary<string, string> boneMapping)
     {
         var humanDescription = new HumanDescription
         {
             human = boneMapping.Select(mapping =>
             {
-                var bone = new HumanBone { humanName = mapping.Key, boneName = mapping.Value };
+                
+                var bone = new HumanBone { 
+                                            humanName = mapping.Key, 
+                                            boneName = mapping.Value 
+                                         };
                 bone.limit.useDefaultValues = true;
                 return bone;
+
             }).ToArray(),
         };
 
-        animator.avatar = UnityEngine.AvatarBuilder.BuildHumanAvatar(gameObject, humanDescription);
+        animator.avatar = UnityEngine.AvatarBuilder.BuildHumanAvatar(gameObject, 
+                                                                        humanDescription);
     }
     
     private readonly IReadOnlyDictionary<string, string> _boneMapping = new Dictionary<string, string>()
