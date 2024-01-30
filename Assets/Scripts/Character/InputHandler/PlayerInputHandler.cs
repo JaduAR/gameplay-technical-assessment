@@ -1,36 +1,48 @@
 ﻿using Game.Assets.Scripts.Character.ActionsBuffer;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Windows;
 
 namespace Game.Assets.Scripts.Character.InputHandler
 {
     /// <summary>
     /// Connector between character controls and player input.
     /// </summary>
-    public class PlayerInputHandler: MonoBehaviour
+    [RequireComponent(typeof(Character))]
+    public class PlayerInputHandler: MonoBehaviour, InputActions.IPlayerActions
     {
-        [SerializeField]
-        private Character _targetCharacter;
-    
+        private InputActions _input;
+
         private IInputActionsBuffer _actionsBuffer;
 
         private IPlayerInputHandlerStrategy _moveHandlerStrategy;
         private IPlayerInputHandlerStrategy _attackHandlerStrategy;
 
-        private void Start()
+        private void Awake()
         {
-            _actionsBuffer = _targetCharacter.ActionsBufferInput;
+            _actionsBuffer = GetComponent<Character>().ActionsBufferInput;
 
-            _moveHandlerStrategy = new ContinuousActionPlayerInputHandlerStrategy(_actionsBuffer, 
+            _moveHandlerStrategy = new ContinuousActionPlayerInputHandlerStrategy(_actionsBuffer,
                 ctx => {
                     var value = ctx.ReadValue<Vector2>();
                     return new MovementIntent(value);
                 });
 
-            _attackHandlerStrategy = new ContinuousActionPlayerInputHandlerStrategy(_actionsBuffer, 
-                ctx => {
-                    return new HandAttackIntent();
-                });
+            _attackHandlerStrategy = new ContinuousActionPlayerInputHandlerStrategy(_actionsBuffer,
+                ctx => new HandAttackIntent());
+
+            _input = new InputActions();
+            _input.Player.SetCallbacks(this);
+        }
+
+        private void OnEnable()
+        {
+            _input.Player.Enable();
+        }
+
+        private void OnDisable()
+        {
+            _input.Player.Disable();
         }
 
         public void OnMove(InputAction.CallbackContext context)
@@ -38,7 +50,7 @@ namespace Game.Assets.Scripts.Character.InputHandler
             _moveHandlerStrategy.Update(context);
         }
 
-        public void OnAttack(InputAction.CallbackContext context)
+        public void OnFire(InputAction.CallbackContext context)
         {
             _attackHandlerStrategy.Update(context);
         }
